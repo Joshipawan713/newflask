@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Index</title>
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+  </head>
+  <body>
+    {% include "navbar.html" %}
+
+    <div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="{{ url_for('static', filename='images/banner01.jpg') }}" class="d-block w-100">
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row mt-4 mb-4">
+            <div class="col-lg-12 mt-2 mb-2">
+                <h2>Best selling books</h2>
+            </div>
+            {% for book in data %}
+            <div class="col-xl-2">
+                <div class="card h-100">
+                    <img src="{{ url_for('static', filename='coverimage/' + book.coverpage) }}" alt="{{ book.title }}" class="card-img-top" style="height: 300px;">
+                    <div class="card-body">
+                        <p class="card-text">{{ book.title }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-between">
+                            <div style="border: 2px solid #0b2558; border-radius: 5px; margin: 5px;">
+                                <span style="padding: 2px 7px; font-size: 13px;">₹ {{ book.price }}</span>
+                            </div>
+                            <div style="border: 2px solid #0b2558; border-radius: 5px; margin: 5px;">
+                                <span style="padding: 2px 7px; font-size: 13px;">Details</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% include "footer.html" %}
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+  </body>
+</html>
