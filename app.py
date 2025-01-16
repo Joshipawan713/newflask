@@ -8,6 +8,7 @@ import secrets
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
+print(app.secret_key)
 
 def get_db_connection():
     try:
