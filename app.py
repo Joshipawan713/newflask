@@ -3,20 +3,18 @@ from flask import Flask, render_template, request, redirect, url_for, current_ap
 import mysql.connector # type: ignore
 from mysql.connector import Error # type: ignore
 from werkzeug.security import generate_password_hash, check_password_hash # type: ignore
-from datetime import datetime
 import secrets
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
-print(app.secret_key)
 
 def get_db_connection():
     try:
         conn = mysql.connector.connect(
             host='localhost',
-            user='localhost',  # Ensure correct MySQL user
-            password='Sdk@1259',  # Ensure correct password
-            database='flask_proj'  # Ensure correct database name
+            user='localhost',
+            password='Sdk@1259',
+            database='flask_proj'
         )
         if conn.is_connected():
             print("Connected Successfully")
@@ -24,10 +22,9 @@ def get_db_connection():
     except mysql.connector.Error as err:
         print(f"Error: {err}")
         return None
-        
 
 @app.route('/')
-def index():    
+def index():
     conn = get_db_connection()
     if not conn:
         return "Database connection failed.", 500
@@ -52,16 +49,8 @@ def index():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    # Get current datetime for adding to database
-    current_datetime = datetime.now()
-    current_date = current_datetime.date()
-    current_time = current_datetime.time()
-    
-    add_date = current_date.strftime("%Y-%m-%d")
-    add_time = current_time.strftime("%I:%M:%S %p")
     
     if request.method == 'POST':
-        # Get form data
         name = request.form['name']
         email = request.form['email']
         mobile = request.form['mobile']
@@ -69,20 +58,15 @@ def register():
         password = request.form['password']
         repeat_password = request.form['repeat_password']
         
-        # Ensure passwords match
         if password != repeat_password:
             flash('Passwords do not match!', 'danger')
             return redirect(url_for('register'))
-
-        # Hash the password before storing it
-        hashed_password = generate_password_hash(password, method='sha256')
+        
         status = 'Active'
         
-        # Database connection and query execution
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # Check if the email already exists
         cursor.execute("SELECT * FROM user WHERE email = %s", (email,))
         check_email = cursor.fetchone()
         if check_email:
@@ -90,11 +74,10 @@ def register():
             conn.close()
             return redirect(url_for('register'))
         
-        # Insert new user data into the database
         cursor.execute(
-            "INSERT INTO user (name, email, mobile, password, account_type, status, add_date, add_time) "
-            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-            (name, email, mobile, hashed_password, account_type, status, add_date, add_time)
+            "INSERT INTO user (name, email, mobile, password, account_type, status) "
+            "VALUES (%s, %s, %s, %s, %s, %s)",
+            (name, email, mobile, password, account_type, status)
         )
         
         conn.commit()
