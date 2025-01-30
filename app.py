@@ -19,7 +19,7 @@ def get_db_connection():
         conn = mysql.connector.connect(
             host='localhost',
             user='root',
-            password='',
+            password='Sdk@1259',
             database='flask_python'
         )
         if conn.is_connected():
@@ -158,7 +158,7 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
-@app.route('/admin/index', methods=['GET', 'POST'])
+@app.route('/admin/', methods=['GET', 'POST'])
 def adminLogin():
     if request.method == 'POST':
         username = request.form['username']
@@ -205,6 +205,69 @@ def adminLogout():
     session.pop('admin_name', None)
     session.pop('admin_email', None)
     return redirect(url_for('adminLogin'))
+
+@app.route('/admin/profile', methods=['GET', 'POST'])
+def adminProfile():
+    if 'admin_logged_in' in session:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM admin WHERE id = %s", (session['admin_user_id'],))
+        data = cursor.fetchone()
+        if request.method == 'POST':
+            name = request.form['name']
+            mobile = request.form['mobile']
+            
+            if not all([name, mobile]):
+                return flash('All Fields are required', 'danger')
+            
+            mobile_regex = r"^\d{10}$"
+            if not re.match(mobile_regex, mobile):
+                flash('Mobile Number format! Must be 10 digits.', 'danger')
+                return redirect(url_for('adminProfile'))
+            
+            cursor.execute("UPDATE admin SET name = %s , mobile= %s WHERE id = %s", (name, mobile, session['admin_user_id']))
+            
+            conn.commit()
+            
+            flash('Profile Update Successfully', 'success')
+        cursor.close()
+        conn.close()
+            
+        return render_template('admin/profile.html', data=data)
+    else:
+        return redirect(url_for('adminLogin'))
+
+
+@app.route('/admin/changepassword', methods=['GET', 'POST'])
+def adminChangePassword():
+    if 'admin_logged_in' in session:
+        add_date, add_time = get_current_date_time()
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM admin WHERE id = %s", (session['admin_user_id'],))
+        data = cursor.fetchone()
+        if request.method == 'POST':
+            old_pass = request.form['old_pass']
+            new_pass = request.form['new_pass']
+            conf_pass = request.form['conf_pass']
+            if new_pass == conf_pass:
+                if check_password_hash(data[4], old_pass):
+                    hashed_password = generate_password_hash(new_pass)
+                    cursor.execute("UPDATE admin SET password = %s WHERE id = %s", (hashed_password, session['admin_user_id']))
+                    conn.commit()
+                    flash('Password Changed Successfully', 'success')
+                else:
+                    flash('Old Password Not Matched', 'danger')
+            else:
+                flash('New or Confirm Password Not Matched', 'danger')
+                
+        cursor.close()
+        conn.close()
+        
+        return render_template('admin/changepassword.html')
+    else:
+        return redirect(url_for('adminLogin'))
+
 
 @app.route('/admin/adduser', methods=['GET', 'POST'])
 def adminAddUser():
@@ -301,7 +364,6 @@ def adminEditUser(user_id):
         return render_template('admin/editusers.html', user=user)
     else:
         return redirect(url_for('adminLogin'))
-    return render_template('admin/editusers.html')
 
 @app.route('/admin/deleteuser/<int:user_id>', methods=['GET', 'POST'])
 def adminDeleteUser(user_id):
@@ -397,10 +459,9 @@ def adminAddBooks():
 
             flash('Book added successfully!', 'success')
             return redirect(url_for('adminAddBooks'))
-
+        return render_template('admin/addbooks.html')
     else:
         return redirect(url_for('adminLogin'))
-    return render_template('admin/addbooks.html')
 
 @app.route('/admin/showbooks')
 def adminShowBooks():
@@ -489,94 +550,91 @@ def adminInventoryBook(books_id):
         data = cursor.fetchone()
         stock = data['stock']
         if request.method == 'POST':
-            try:
-                old_stock = request.form['old_stock']
-                in_out_stock = request.form['in_out_stock']
-                total_stock = request.form['total_stock']
-            except ValueError:
-                flash('Please enter valid integer values for stock fields!', 'danger')
-                return redirect(url_for('adminInventoryBook', books_id=books_id))
-            
-            if not all([old_stock, in_out_stock, total_stock]):
+            in_out_stock = request.form['in_out_stock']
+            total_stock = int(stock) + int(in_out_stock)
+            if not all([in_out_stock, total_stock]):
                 flash('All fields are required!', 'danger')
                 return redirect(url_for('adminInventoryBook'))
-            
             stock_type = 'Inward'
-            
             cursor.execute("UPDATE books SET stock = %s WHERE id = %s", (total_stock,books_id))
-            cursor.execute("INSERT INTO inventory (book_id, old_stock, in_out_stock, total_stock, stock_type, add_by_name, add_by_email, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", (books_id, old_stock, in_out_stock, total_stock, stock_type, session['admin_name'], session['admin_email'], add_date, add_time))
-            
+            cursor.execute("INSERT INTO inventory (book_id, old_stock, in_out_stock, total_stock, stock_type, add_by_name, add_by_email, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", (books_id, stock, in_out_stock, total_stock, stock_type, session['admin_name'], session['admin_email'], add_date, add_time))
             conn.commit()
-            
-            flash('Stock Added Successfully!', 'success')
             return redirect(url_for('adminShowBooks'))
-        
         cursor.close()
         conn.close()
-        
         return render_template('admin/inventory.html', stock=stock)
     else:
         return redirect(url_for('adminLogin'))
-
-@app.route('/admin/profile', methods=['GET', 'POST'])
-def adminProfile():
+    
+@app.route('/admin/historybook/<int:books_id>', methods=['GET', 'POST'])
+def adminHistoryBook(books_id):
     if 'admin_logged_in' in session:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM admin WHERE id = %s", (session['admin_user_id'],))
-        data = cursor.fetchone()
-        if request.method == 'POST':
-            name = request.form['name']
-            mobile = request.form['mobile']
-            
-            if not all([name, mobile]):
-                return flash('All Fields are required', 'danger')
-            
-            mobile_regex = r"^\d{10}$"
-            if not re.match(mobile_regex, mobile):
-                flash('Mobile Number format! Must be 10 digits.', 'danger')
-                return redirect(url_for('adminProfile'))
-            
-            cursor.execute("UPDATE admin SET name = %s , mobile= %s WHERE id = %s", (name, mobile, session['admin_user_id']))
-            
-            conn.commit()
-            
-            flash('Profile Update Successfully', 'success')
+        cursor.execute("SELECT inventory.*, books.id, books.title, books.editor FROM inventory  JOIN books ON inventory.book_id = books.id  WHERE inventory.book_id = %s", (books_id,))
+        inven = cursor.fetchall()
         cursor.close()
         conn.close()
-            
-        return render_template('admin/profile.html', data=data)
+        return render_template('admin/historybook.html', books_id=books_id, inven=inven)
     else:
         return redirect(url_for('adminLogin'))
 
-
-@app.route('/admin/changepassword', methods=['GET', 'POST'])
-def adminChangePassword():
+@app.route('/admin/manageinventory', methods=['GET','POST'])
+def adminManageInventory():
     if 'admin_logged_in' in session:
         add_date, add_time = get_current_date_time()
         conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM admin WHERE id = %s", (session['admin_user_id'],))
-        data = cursor.fetchone()
+        cursor = conn.cursor(dictionary=True)
         if request.method == 'POST':
-            old_pass = request.form['old_pass']
-            new_pass = request.form['new_pass']
-            conf_pass = request.form['conf_pass']
-            if new_pass == conf_pass:
-                if check_password_hash(data[4], old_pass):
-                    hashed_password = generate_password_hash(new_pass)
-                    cursor.execute("UPDATE admin SET password = %s WHERE id = %s", (hashed_password, session['admin_user_id']))
-                    conn.commit()
-                    flash('Password Changed Successfully', 'success')
-                else:
-                    flash('Old Password Not Matched', 'danger')
+            book_id = request.form['book_id']
+            in_out_stock = request.form['in_out_stock']
+            if not all([book_id, in_out_stock]):
+                flash('All fields are required!', 'danger')
+                return redirect(url_for('adminManageInventory'))
+            cursor.execute("SELECT * FROM books WHERE id = %s", (book_id,))
+            data = cursor.fetchone()
+
+            if not data:
+                flash('No book found with that ID.', 'danger')
+                return redirect(url_for('adminManageInventory'))
             else:
-                flash('New or Confirm Password Not Matched', 'danger')
-                
+                stock = int(data['stock'])
+                total_stock = int(stock) + int(in_out_stock)
+                stock_type = 'Inward'
+                cursor.execute("UPDATE books SET stock = %s WHERE id = %s", (total_stock,book_id))
+                cursor.execute("INSERT INTO inventory (book_id, old_stock, in_out_stock, total_stock, stock_type, add_by_name, add_by_email, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", (book_id, stock, in_out_stock, total_stock, stock_type, session['admin_name'], session['admin_email'], add_date, add_time))
+                conn.commit()
+                flash('Stock Updated Successfuly', 'success')
+                return redirect(url_for('adminManageInventory'))
+
         cursor.close()
         conn.close()
+        return render_template('admin/manageinventory.html')
+    else:
+        return redirect(url_for('adminLogin'))
+
+@app.route('/admin/addtocart')
+def adminAddToCart():
+    if 'admin_logged_in' in session:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute('SELECT * FROM books')
+        data = cursor.fetchall()
+        covers_folder = os.path.join(current_app.static_folder, 'coverimage')
         
-        return render_template('admin/changepassword.html')
+        for book in data:
+            image_filename = book.get('coverpage')
+            image_path = os.path.join(covers_folder, image_filename)
+            
+            if not image_filename or image_filename.strip() == "":
+                book['coverpage'] = 'imagesnotfound.jpg'
+            
+            if not os.path.exists(image_path):
+                book['coverpage'] = 'imagesnotfound.jpg'
+        
+        cursor.close()
+        conn.close()
+        return render_template('admin/addtocart.html', data=data)
     else:
         return redirect(url_for('adminLogin'))
 
