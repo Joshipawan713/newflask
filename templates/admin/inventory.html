@@ -22,19 +22,15 @@
             <div class="card shadow mb-4">
                 <div class="card-header">Add Inventory</div>
                 <div class="card-body">
-                    <form action"" method="POST">
+                    <form action="" method="POST">
                         <div class="row">
                             <div class="col-lg-6">
                                 <label>Old Stock :</label>
-                                <input type="text" name="old_stock" class="form-control mt-2 mb-2" placeholder="Old Stock" value="{{ stock }}">
+                                <input type="text" name="old_stock" class="form-control mt-2 mb-2" readonly placeholder="Old Stock" value="{{ stock }}">
                             </div>
                             <div class="col-lg-6">
                                 <label>New Stock :</label>
                                 <input type="text" name="in_out_stock" class="form-control mt-2 mb-2" placeholder="New Stock">
-                            </div>
-                            <div class="col-lg-6">
-                                <label>Total Stock :</label>
-                                <input type="text" name="total_stock" class="form-control mt-2 mb-2" placeholder="Total Stock">
                             </div>
                             <div class="col-lg-12 text-center mt-2 mb-2">
                                 <button type="submit" name="submit" class="btn btn-success">Add Stock</button>

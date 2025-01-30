@@ -1,6 +1,6 @@
 {% extends "admin/base.html" %}
 
-{% block admintitle %} Dashboard - Admin {% endblock %}
+{% block admintitle %} Show Books - Admin {% endblock %}
 
 {% block admincontent %}
 
@@ -24,6 +24,7 @@
                                 <th>Inventory</th>
                                 <th>Edit</th>
                                 <th>Delete</th>
+                                <th>History</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -41,6 +42,7 @@
                                         <td><a href="{{ url_for('adminInventoryBook', books_id=books.id) }}" class="badge bg-warning text-decoration-none">Add Inventory</a></td>
                                         <td><a href="{{ url_for('adminEditBooks', books_id=books.id) }}" class="badge bg-primary text-decoration-none">Edit</a></td>
                                         <td><a href="{{ url_for('adminDeleteBook', books_id=books.id) }}" class="badge bg-danger text-decoration-none">Delete</a></td>
+                                        <td><a href="{{ url_for('adminHistoryBook', books_id=books.id) }}" class="badge bg-success text-decoration-none">History</a></td>
                                     </tr>
                                 {% endfor %}
                             {% endif %}
