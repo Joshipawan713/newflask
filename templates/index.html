@@ -1,13 +1,8 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Index</title>
-    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-  </head>
-  <body>
-    {% include "navbar.html" %}
+{% extends "base.html" %}
+
+{% block title %} Index {% endblock %}
+
+{% block content %}
 
     <div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
@@ -32,7 +27,7 @@
                     <div class="card-footer">
                         <div class="d-flex justify-content-between">
                             <div style="border: 2px solid #0b2558; border-radius: 5px; margin: 5px;">
-                                <span style="padding: 2px 7px; font-size: 13px;">₹ {{ book.price }}</span>
+                                <span style="padding: 2px 7px; font-size: 13px;">₹ {{ book.actual_price }}</span>
                             </div>
                             <div style="border: 2px solid #0b2558; border-radius: 5px; margin: 5px;">
                                 <span style="padding: 2px 7px; font-size: 13px;">Details</span>
@@ -45,9 +40,4 @@
         </div>
     </div>
 
-    {% include "footer.html" %}
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
-  </body>
-</html>
+{% endblock %}

@@ -1,17 +1,25 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Register</title>
-    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-  </head>
-  <body>
-    {% include "navbar.html" %}
+{% extends "base.html" %}
+
+{% block title %} Register {% endblock %}
+
+{% block content %}
 
     <div class="container-fluid">
-        <div class="row justify-content-center mt-2 mb-2">
+        <div class="row justify-content-center mt-4 mb-2">
             <div class="col-lg-8">
+              {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="alert-container">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                <strong>{{ category|capitalize }}:</strong> {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+              {% endwith %}
+
                 <div class="card">
                     <div class="card-header">
                       Register
@@ -58,9 +66,4 @@
         </div>
     </div>
 
-    {% include "footer.html" %}
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
-  </body>
-</html>
+{% endblock %}
