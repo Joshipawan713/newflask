@@ -1,0 +1,102 @@
+{% extends "admin/base.html" %}
+
+{% block admintitle %} Dashboard - Admin {% endblock %}
+
+{% block admincontent %}
+
+<div class="container-fluid">
+    <div class="row mt-4">
+        <div class="col-lg-3">
+            <div class="card shadow mb-4">
+                <div class="card-body p-0">
+                    <div class="d-flex justify-content-between p-3">
+                        <div>Total Books</div>
+                        <div>400</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="card shadow mb-4">
+                <div class="card-body p-0">
+                    <div class="d-flex justify-content-between p-3">
+                        <div>Total Books</div>
+                        <div>400</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="card shadow mb-4">
+                <div class="card-body p-0">
+                    <div class="d-flex justify-content-between p-3">
+                        <div>Total Books</div>
+                        <div>400</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="card shadow mb-4">
+                <div class="card-body p-0">
+                    <div class="d-flex justify-content-between p-3">
+                        <div>Total Books</div>
+                        <div>400</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-10">
+            <div class="card shadow mb-4">
+                <div class="card-header d-flex justify-content-between">
+                    <div>
+                        <a class="text-decoration-none badge bg-primary" href="dashboard?year={{ year - 1 if month == 1 else year }}&month={{ month - 1 if month > 1 else 12 }}">Prev</a>
+                    </div>
+                    <div>
+                        Calendar - {{ current_date }}/{{ month }}/{{ year }}
+                    </div>
+                    <div>
+                        <a class="text-decoration-none badge bg-primary" href="dashboard?year={{ year + 1 if month == 12 else year }}&month={{ month + 1 if month < 12 else 1 }}">Next</a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <table class="table table-bordered text-center">
+                                <thead>
+                                    <tr>
+                                        <th>Mon</th>
+                                        <th>Tue</th>
+                                        <th>Wed</th>
+                                        <th>Thu</th>
+                                        <th>Fri</th>
+                                        <th>Sat</th>
+                                        <th>Sun</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for week in calendar %}
+                                        <tr>
+                                            {% for day in week %}
+                                                <td>
+                                                    {% if day != 0 %}
+                                                        <a href="javascript:void(0)" class="text-decoration-none text-dark">{{ day }}</a>
+                                                    {% endif %}
+                                                </td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "admin/base.html" %}
+
+{% block admintitle %} Add Inventory - Admin {% endblock %}
+
+{% block admincontent %}
+
+<div class="container-fluid">
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-12">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="alert-container">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                <strong>{{ category|capitalize }}:</strong> {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <div class="card shadow mb-4">
+                <div class="card-header">Add Inventory</div>
+                <div class="card-body">
+                    <form action"" method="POST">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label>Old Stock :</label>
+                                <input type="text" name="old_stock" class="form-control mt-2 mb-2" placeholder="Old Stock" value="{{ stock }}">
+                            </div>
+                            <div class="col-lg-6">
+                                <label>New Stock :</label>
+                                <input type="text" name="in_out_stock" class="form-control mt-2 mb-2" placeholder="New Stock">
+                            </div>
+                            <div class="col-lg-6">
+                                <label>Total Stock :</label>
+                                <input type="text" name="total_stock" class="form-control mt-2 mb-2" placeholder="Total Stock">
+                            </div>
+                            <div class="col-lg-12 text-center mt-2 mb-2">
+                                <button type="submit" name="submit" class="btn btn-success">Add Stock</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

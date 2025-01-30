@@ -1,6 +1,6 @@
 {% extends "admin/base.html" %}
 
-{% block admintitle %} Add Books - Admin {% endblock %}
+{% block admintitle %} Edit Books - Admin {% endblock %}
 
 {% block admincontent %}
 
@@ -26,47 +26,50 @@
                         <div class="row">
                             <div class="col-lg-6">
                                 <label>Title :</label>
-                                <input type="text" name="title" class="form-control mt-2 mb-2" placeholder="Title">
+                                <input type="text" name="title" class="form-control mt-2 mb-2" placeholder="Title" value="{{ books.title }}">
                             </div>
                             <div class="col-lg-6">
                                 <label>Editor :</label>
-                                <input type="text" name="editor" class="form-control mt-2 mb-2" placeholder="Editor">
+                                <input type="text" name="editor" class="form-control mt-2 mb-2" placeholder="Editor" value="{{ books.editor }}">
                             </div>
                             <div class="col-lg-6">
                                 <label>Publisher Year :</label>
-                                <input type="text" name="publisher_year" maxlength="4" class="form-control mt-2 mb-2" placeholder="Publisher Year">
+                                <input type="text" name="publisher_year" maxlength="4" class="form-control mt-2 mb-2" placeholder="Publisher Year" value="{{ books.publisher_year }}">
                             </div>
                             <div class="col-lg-6">
                                 <label>Subject :</label>
-                                <input type="text" name="subject" class="form-control mt-2 mb-2" placeholder="Subject">
+                                <input type="text" name="subject" class="form-control mt-2 mb-2" placeholder="Subject" value="{{ books.subject }}">
                             </div>
                             <div class="col-lg-6">
                                 <label>ISBN :</label>
-                                <input type="text" name="isbn" class="form-control mt-2 mb-2" placeholder="ISBN">
+                                <input type="text" name="isbn" class="form-control mt-2 mb-2" placeholder="ISBN" value="{{ books.isbn }}">
                             </div>
                             <div class="col-lg-6">
                                 <label>Pages :</label>
-                                <input type="text" name="pages" class="form-control mt-2 mb-2" placeholder="Pages">
+                                <input type="text" name="pages" class="form-control mt-2 mb-2" placeholder="Pages" value="{{ books.pages }}">
                             </div>
                             <div class="col-lg-6">
                                 <label>Language :</label>
-                                <input type="text" name="language" class="form-control mt-2 mb-2" placeholder="Language">
+                                <input type="text" name="language" class="form-control mt-2 mb-2" placeholder="Language" value="{{ books.language }}">
                             </div>
                             <div class="col-lg-6">
                                 <label>Actual Price :</label>
-                                <input type="text" name="actual_price" class="form-control mt-2 mb-2" placeholder="Actual Price">
+                                <input type="text" name="actual_price" class="form-control mt-2 mb-2" placeholder="Actual Price" value="{{ books.actual_price }}">
                             </div>
                             <div class="col-lg-6">
                                 <label>Discounted Price :</label>
-                                <input type="text" name="discounted_price" class="form-control mt-2 mb-2" placeholder="Discounted Price">
+                                <input type="text" name="discounted_price" class="form-control mt-2 mb-2" placeholder="Discounted Price" value="{{ books.discounted_price }}">
                             </div>
                             <div class="col-lg-6">
                                 <label>Description :</label>
-                                <input type="text" name="descr" class="form-control mt-2 mb-2" placeholder="Description">
+                                <input type="text" name="descr" class="form-control mt-2 mb-2" placeholder="Description" value="{{ books.descr }}">
                             </div>
                             <div class="col-lg-6">
                                 <label>Upload Image :</label>
                                 <input type="file" name="image" class="form-control mt-2 mb-2">
+                            </div>
+                            <div class="col-lg-12">
+                                <img src="{% if books.coverpage %} {{ url_for('static', filename='coverimage/' + books.coverpage) }} {% else %} {{ url_for('static', filename='coverimage/imagesnotfound.jpg') }} {% endif %}" class="img-fluid">
                             </div>
                             <div class="col-lg-12 text-center mt-2 mb-2">
                                 <button type="submit" name="submit" class="btn btn-success">Add Books</button>

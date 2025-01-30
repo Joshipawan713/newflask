@@ -1,0 +1,55 @@
+{% extends "admin/base.html" %}
+
+{% block admintitle %} Dashboard - Admin {% endblock %}
+
+{% block admincontent %}
+
+<div class="container-fluid">
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header">Show Users</div>
+                <div class="card-body p-0">
+                    <table class="table table-bordered table-striped text-center overflow-auto mb-0">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>ISBN</th>
+                                <th>Title</th>
+                                <th>Editor</th>
+                                <th>Pages</th>
+                                <th>Stock</th>
+                                <th>Actual_Price</th>
+                                <th>Discounted_Price</th>
+                                <th>Inventory</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if data %}
+                                {% for books in data %}
+                                    <tr>
+                                        <td>{{ books.id }}</td>
+                                        <td>{{ books.isbn }}</td>
+                                        <td>{{ books.title }}</td>
+                                        <td>{{ books.editor }}</td>
+                                        <td>{{ books.pages }}</td>
+                                        <td>{{ books.stock }}</td>
+                                        <td>{{ books.actual_price }}</td>
+                                        <td>{{ books.discounted_price }}</td>
+                                        <td><a href="{{ url_for('adminInventoryBook', books_id=books.id) }}" class="badge bg-warning text-decoration-none">Add Inventory</a></td>
+                                        <td><a href="{{ url_for('adminEditBooks', books_id=books.id) }}" class="badge bg-primary text-decoration-none">Edit</a></td>
+                                        <td><a href="{{ url_for('adminDeleteBook', books_id=books.id) }}" class="badge bg-danger text-decoration-none">Delete</a></td>
+                                    </tr>
+                                {% endfor %}
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

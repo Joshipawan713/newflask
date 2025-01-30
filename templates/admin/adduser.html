@@ -1,0 +1,70 @@
+{% extends "admin/base.html" %}
+
+{% block admintitle %} Add User - Admin {% endblock %}
+
+{% block admincontent %}
+
+<div class="container-fluid">
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-12">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="alert-container">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                <strong>{{ category|capitalize }}:</strong> {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <div class="card shadow mb-4">
+                <div class="card-header">Add Users</div>
+                <div class="card-body">
+                    <form action"" method="POST">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label>Username :</label>
+                                <input type="text" name="name" class="form-control mt-2 mb-2" placeholder="Username">
+                            </div>
+                            <div class="col-lg-6">
+                                <label>E-mail Id :</label>
+                                <input type="text" name="email" class="form-control mt-2 mb-2" placeholder="E-mail Id">
+                            </div>
+                            <div class="col-lg-6">
+                                <label>Mobile No. :</label>
+                                <input type="text" name="mobile" class="form-control mt-2 mb-2" placeholder="Mobile No.">
+                            </div>
+                            <div class="col-lg-6">
+                                <label>Password : </label>
+                                <input type="password" name="password" class="form-control mt-2 mb-2" placeholder="Password">
+                            </div>
+                            <div class="col-lg-6">
+                                <label>Account Type</label>
+                                <select class="form-control mt-2 mb-2" name="account_type">
+                                    <option hidden value="">Select Account Type</option>
+                                    <option value="Personal">Personal</option>
+                                    <option value="Organisation">Organisation</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>Status :</label>
+                                <select class="form-control mt-2 mb-2" name="status">
+                                    <option hidden value="">Select Account Type</option>
+                                    <option value="Active">Active</option>
+                                    <option value="Deactive">Deactive</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-12 text-center mt-2 mb-2">
+                                <button type="submit" name="submit" class="btn btn-success">Add User</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
