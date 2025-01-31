@@ -1,0 +1,60 @@
+{% extends "admin/base.html" %}
+ 
+{% block admintitle %} Show Cart - Admin {% endblock %}
+
+{% block admincontent %}
+
+<div class="container-fluid">
+    <div class="row mt-4 mb-4">
+        <div class="col-lg-12 mt-2 mb-2">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <div>My Cart</div>
+                    <div><a href="{{ url_for('adminAddToCart') }}" class="text-dark text-decoration-none"><i class="fa fa-shopping-cart" aria-hidden="true"></i> {% if count_cart == 0 %} (0) {% else %} ({{count_cart}}) {% endif %}</a></div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <table class="table table-bordered text-center align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Book Imgaes</th>
+                                        <th>Title</th>
+                                        <th>Editor</th>
+                                        <th>Quantity</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if show_result %}
+                                        {% for data in show_result %}
+                                            <tr>
+                                                <td>{{ data.book_id }}</td>
+                                                <td><img src="{{ url_for('static', filename='coverimage/' + data.coverpage) }}" style="width: 50px; height: 50px;"></td>
+                                                <td>{{ data.title }}</td>
+                                                <td>{{ data.editor }}</td>
+                                                <td>{{ data.qty }}</td>
+                                                <td>
+                                                    <form method="POST">
+                                                        <input type="hidden" name="books_id" value="{{ data.book_id }}">
+                                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="" class="btn btn-primary float-end">Proceed To Checkout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
