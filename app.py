@@ -30,8 +30,8 @@ def get_db_connection():
         return None
     
 
-# custom login_required 
-# use @login_required('login')
+# # custom login_required 
+# # use @login_required('login')
 # def login_required(login_url='login'):
 #     def decorator(f):
 #         def wrapper(*args, **kwargs):
@@ -194,7 +194,7 @@ def adminDashboard():
             month = int(request.args.get('month'))
         cal = calendar.monthcalendar(year, month)
         
-        return render_template('admin/dashboard.html', calendar=cal, year=year, month=month, current_date=current_date)
+        return render_template('admin/dashboard.html', calendar=cal, year=year, month=month, current_date=current_date, now=now)
     else:
         return redirect(url_for('adminLogin'))
 
@@ -287,7 +287,6 @@ def adminAddUser():
             if not all([name, email, mobile, password, account_type, status]):
                 flash('All fields are required!', 'danger')
                 return redirect(url_for('adminAddUser'))
-            
             
             email_regex = r"(^\w|[a-zA-Z0-9._%+-]+)@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
             mobile_regex = r"^\d{10}$"  # Assuming 10-digit mobile numbers
@@ -585,27 +584,45 @@ def adminManageInventory():
         add_date, add_time = get_current_date_time()
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
-        if request.method == 'POST':
-            book_id = request.form['book_id']
-            in_out_stock = request.form['in_out_stock']
-            if not all([book_id, in_out_stock]):
-                flash('All fields are required!', 'danger')
-                return redirect(url_for('adminManageInventory'))
-            cursor.execute("SELECT * FROM books WHERE id = %s", (book_id,))
-            data = cursor.fetchone()
 
-            if not data:
-                flash('No book found with that ID.', 'danger')
+        if request.method == 'POST':
+            book_ids = request.form.getlist('book_id[]')
+            in_out_stocks = request.form.getlist('in_out_stock[]')
+
+            if not all([book_ids, in_out_stocks]) or len(book_ids) != len(in_out_stocks):
+                flash('All fields are required for each book!', 'danger')
                 return redirect(url_for('adminManageInventory'))
-            else:
+
+            for book_id, in_out_stock in zip(book_ids, in_out_stocks):
+                if not book_id or not in_out_stock:
+                    continue  # Skip empty inputs (just in case)
+
+                # Convert stock change to integer
+                try:
+                    in_out_stock = int(in_out_stock)
+                except ValueError:
+                    flash('Invalid stock value for book ID: ' + book_id, 'danger')
+                    return redirect(url_for('adminManageInventory'))
+
+                # Check if book exists
+                cursor.execute("SELECT * FROM books WHERE id = %s", (book_id,))
+                data = cursor.fetchone()
+
+                if not data:
+                    flash(f'No book found with ID {book_id}.', 'danger')
+                    continue  # Skip this book if not found
+
+                # Update stock
                 stock = int(data['stock'])
-                total_stock = int(stock) + int(in_out_stock)
+                total_stock = stock + in_out_stock
                 stock_type = 'Inward'
-                cursor.execute("UPDATE books SET stock = %s WHERE id = %s", (total_stock,book_id))
-                cursor.execute("INSERT INTO inventory (book_id, old_stock, in_out_stock, total_stock, stock_type, add_by_name, add_by_email, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", (book_id, stock, in_out_stock, total_stock, stock_type, session['admin_name'], session['admin_email'], add_date, add_time))
-                conn.commit()
-                flash('Stock Updated Successfuly', 'success')
-                return redirect(url_for('adminManageInventory'))
+
+                cursor.execute("UPDATE books SET stock = %s WHERE id = %s", (total_stock, book_id))
+                cursor.execute("INSERT INTO inventory (book_id, old_stock, in_out_stock, total_stock, stock_type, add_by_name, add_by_email, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                               (book_id, stock, in_out_stock, total_stock, stock_type, session['admin_name'], session['admin_email'], add_date, add_time))
+
+            conn.commit()
+            return redirect(url_for('adminManageInventory'))
 
         cursor.close()
         conn.close()
@@ -613,11 +630,17 @@ def adminManageInventory():
     else:
         return redirect(url_for('adminLogin'))
 
-@app.route('/admin/addtocart')
+@app.route('/admin/addtocart', methods=['GET', 'POST'])
 def adminAddToCart():
     if 'admin_logged_in' in session:
+        add_date, add_time = get_current_date_time()
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("SELECT COUNT(id) as count_cart FROM admin_cart")
+        cart_result = cursor.fetchone()
+        count_cart = cart_result['count_cart']
+
         cursor.execute('SELECT * FROM books')
         data = cursor.fetchall()
         covers_folder = os.path.join(current_app.static_folder, 'coverimage')
@@ -632,9 +655,67 @@ def adminAddToCart():
             if not os.path.exists(image_path):
                 book['coverpage'] = 'imagesnotfound.jpg'
         
+        if request.method == 'POST':
+            book_id = request.form['book_id']
+            cursor.execute("SELECT * FROM admin_cart WHERE book_id = %s", (book_id,))
+            check_exist = cursor.fetchone()
+            if not check_exist:
+                qty = 1
+                cursor.execute("INSERT INTO admin_cart (book_id, qty, add_by_name, add_by_email, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s)", (book_id, qty, session['admin_name'], session['admin_email'], add_date, add_time))
+                conn.commit()
+            else:
+                qty = int(check_exist['qty']) + 1
+                cursor.execute("UPDATE admin_cart SET qty = %s WHERE book_id = %s", (qty, book_id))
+                conn.commit()
+            
+            return redirect(url_for('adminAddToCart'))
+
         cursor.close()
         conn.close()
-        return render_template('admin/addtocart.html', data=data)
+        return render_template('admin/addtocart.html', data=data,count_cart=count_cart)
+    else:
+        return redirect(url_for('adminLogin'))
+
+@app.route('/admin/showcart', methods=['GET', 'POST'])
+def adminShowCart():
+    if 'admin_logged_in' in session:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT COUNT(id) as count_cart FROM admin_cart")
+        cart_result = cursor.fetchone()
+        count_cart = cart_result['count_cart']
+
+        if count_cart == 0:
+            return redirect(url_for('adminAddToCart'))
+
+        cursor.execute("SELECT admin_cart.book_id, admin_cart.qty, books.title,books.coverpage,books.editor FROM admin_cart JOIN books ON admin_cart.book_id = books.id")
+        show_result = cursor.fetchall()
+        covers_folder = os.path.join(current_app.static_folder, 'coverimage')
+
+        for book in show_result:
+            image_filename = book.get('coverpage')
+            image_path = os.path.join(covers_folder, image_filename)
+            
+            if not image_filename or image_filename.strip() == "":
+                book['coverpage'] = 'imagesnotfound.jpg'
+            
+            if not os.path.exists(image_path):
+                book['coverpage'] = 'imagesnotfound.jpg'
+
+        if request.method == 'POST':
+            books_id = request.form['books_id']
+            
+            if not books_id:
+                flash('Book Id missing', 'danger')
+            
+            cursor.execute("DELETE FROM admin_cart WHERE book_id = %s", (books_id,))
+            conn.commit()
+            return redirect(url_for('adminShowCart'))
+
+        cursor.close()
+        conn.close()
+
+        return render_template('admin/showcart.html', count_cart=count_cart, show_result=show_result)
     else:
         return redirect(url_for('adminLogin'))
 
