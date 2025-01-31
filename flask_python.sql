@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.1-1.el9
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Jan 29, 2025 at 06:15 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Host: localhost
+-- Generation Time: Jan 31, 2025 at 12:30 PM
+-- Server version: 10.5.22-MariaDB
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -80,6 +80,15 @@ CREATE TABLE `admin_cart` (
   `add_time` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `admin_cart`
+--
+
+INSERT INTO `admin_cart` (`id`, `book_id`, `qty`, `add_by_name`, `add_by_email`, `add_date`, `add_time`) VALUES
+(7, '5', '2', 'Admin12', 'admin@gmail.com', '2025-01-31', '05:51:16 PM'),
+(8, '7', '3', 'Admin12', 'admin@gmail.com', '2025-01-31', '05:51:17 PM'),
+(9, '4', '3', 'Admin12', 'admin@gmail.com', '2025-01-31', '05:51:17 PM');
+
 -- --------------------------------------------------------
 
 --
@@ -109,10 +118,9 @@ CREATE TABLE `books` (
 --
 
 INSERT INTO `books` (`id`, `coverpage`, `title`, `editor`, `publisher_year`, `subject`, `isbn`, `pages`, `stock`, `language`, `actual_price`, `discounted_price`, `descr`, `add_date`, `add_time`) VALUES
-(1, 'CIIL1.png', 'Title', 'Editor2', 2024, 'Hindi', '7-8-1-2', 120, 11, 'Hindi', 200, 100, 'test', '', ''),
-(3, '', 'Lead Research Coordinator', 'Laborum id id iusto animi.', 2024, 'Hindi', 'Excepturi nulla voluptatum dol', 12, 0, 'Reynolds', 12, 12, '1', '2025-01-20', '09:28:08 PM'),
-(4, '2025-01-22_asus.jpg', 'Dynamic Creative Orchestrator', 'Sint id odit.', 8787, 'Hindi', 'Sunt dolore occaecati et magni', 1210, 0, 'Windler', 100, 100, 'Autem inventore iure commodi.', '2025-01-22', '08:59:44 PM'),
-(5, '5_asus.jpg', 'National Accounts Engineer', 'Placeat architecto est ratione.', 4545, 'Hindi', 'Soluta aliquid odit.', 74858, 0, 'Hauck', 2000, 1000, 'Molestias blanditiis cupiditate.', '2025-01-22', '09:03:44 PM');
+(4, '2025-01-22_asus.jpg', 'Dynamic Creative Orchestrator', 'Sint id odit.', 8787, 'Hindi', 'Sunt dolore occaecati et magni', 1210, 106, 'Windler', 100, 100, 'Autem inventore iure commodi.', '2025-01-22', '08:59:44 PM'),
+(5, '5_asus.jpg', 'National Accounts Engineer', 'Placeat architecto est ratione.', 4545, 'Hindi', 'Soluta aliquid odit.', 74858, 62, 'Hauck', 2000, 1000, 'Molestias blanditiis cupiditate.', '2025-01-22', '09:03:44 PM'),
+(7, 'CIIL7.png', 'Forward Optimization Assistant', 'Nisi fuga', 2024, 'Hindi', '85-85-85-85', 150, 50, 'Rosenbaum', 5000, 4500, 'Amet iusto iste esse ipsam.', '2025-01-31', '11:07:43 AM');
 
 -- --------------------------------------------------------
 
@@ -19425,8 +19433,14 @@ CREATE TABLE `inventory` (
 --
 
 INSERT INTO `inventory` (`id`, `book_id`, `old_stock`, `in_out_stock`, `total_stock`, `stock_type`, `add_by_name`, `add_by_email`, `add_date`, `add_time`) VALUES
-(1, '1', '0', '1', '1', 'Inward', 'Admin12', 'admin@gmail.com', '2025-01-29', '10:41:49 PM'),
-(2, '1', '1', '10', '11', 'Inward', 'Admin12', 'admin@gmail.com', '2025-01-29', '10:43:35 PM');
+(1, '4', '0', '10', '10', 'Inward', 'Admin12', 'admin@gmail.com', '2025-01-31', '03:57:43 PM'),
+(2, '4', '10', '10', '20', 'Inward', 'Admin12', 'admin@gmail.com', '2025-01-31', '03:58:15 PM'),
+(3, '4', '20', '25', '45', 'Inward', 'Admin12', 'admin@gmail.com', '2025-01-31', '03:58:39 PM'),
+(4, '4', '45', '36', '81', 'Inward', 'Admin12', 'admin@gmail.com', '2025-01-31', '03:59:25 PM'),
+(5, '5', '0', '25', '25', 'Inward', 'Admin12', 'admin@gmail.com', '2025-01-31', '03:59:25 PM'),
+(6, '4', '81', '25', '106', 'Inward', 'Admin12', 'admin@gmail.com', '2025-01-31', '04:05:53 PM'),
+(7, '5', '25', '37', '62', 'Inward', 'Admin12', 'admin@gmail.com', '2025-01-31', '04:05:53 PM'),
+(8, '7', '0', '50', '50', 'Inward', 'Admin12', 'admin@gmail.com', '2025-01-31', '04:05:53 PM');
 
 -- --------------------------------------------------------
 
@@ -19713,13 +19727,13 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `admin_cart`
 --
 ALTER TABLE `admin_cart`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `books`
 --
 ALTER TABLE `books`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `country`
@@ -19731,7 +19745,7 @@ ALTER TABLE `country`
 -- AUTO_INCREMENT for table `inventory`
 --
 ALTER TABLE `inventory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `invoice`
