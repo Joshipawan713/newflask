@@ -27,11 +27,17 @@
                     <div class="card-footer">
                         <div class="d-flex justify-content-between">
                             <div style="border: 2px solid #0b2558; border-radius: 5px; margin: 5px;">
-                                <span style="padding: 2px 7px; font-size: 13px;">₹ {{ book.actual_price }}</span>
+                                <a href="javascript:void(0)" style="padding: 2px 7px; font-size: 13px;" class="text-decoration-none text-dark">₹ {{ book.actual_price }}</a>
                             </div>
-                            <div style="border: 2px solid #0b2558; border-radius: 5px; margin: 5px;">
-                                <span style="padding: 2px 7px; font-size: 13px;">Details</span>
-                            </div>
+                            {% if book.stock == 0 %}
+                                <div style="border-radius: 5px; margin: 5px;" class="bg-danger text-white">
+                                    <a href="javascript:void(0)" style="padding: 2px 7px; font-size: 13px;" class="text-decoration-none text-white">Out Of Stock</a>
+                                </div>
+                            {% else %}
+                                <div style="border-radius: 5px; margin: 5px;" class="bg-success text-white">
+                                    <a href="javascript:void(0)" style="padding: 2px 7px; font-size: 13px;" class="text-decoration-none text-white">Details</a>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
