@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jan 31, 2025 at 12:30 PM
+-- Generation Time: Feb 01, 2025 at 11:47 AM
 -- Server version: 10.5.22-MariaDB
 -- PHP Version: 8.0.30
 
@@ -61,7 +61,7 @@ CREATE TABLE `admin` (
 --
 
 INSERT INTO `admin` (`id`, `name`, `email`, `mobile`, `password`, `acc_type`, `add_date`, `add_time`) VALUES
-(1, 'Admin12', 'admin@gmail.com', '8547854791', 'scrypt:32768:8:1$eY5lUGiqcfFumKbH$81312793a316dfbe6bced0dc937e6b4a7d271a83fd72d3f901ec88f4d5ce3a3ca54b391f4e4882575f63382a2dab2fc0a47ad4bd8ee706adb40be1fff24740e3', 'Admin', '2025-01-19', '02:36:44 PM'),
+(1, 'Admin', 'admin@gmail.com', '8547854791', 'scrypt:32768:8:1$eY5lUGiqcfFumKbH$81312793a316dfbe6bced0dc937e6b4a7d271a83fd72d3f901ec88f4d5ce3a3ca54b391f4e4882575f63382a2dab2fc0a47ad4bd8ee706adb40be1fff24740e3', 'Admin', '2025-01-19', '02:36:44 PM'),
 (2, 'SuperAdmin', 'superadmin@gmail.com', '8547854785', 'scrypt:32768:8:1$IolJED6MbDWSYKFS$88b43ed3b361704a9c1d11bb30a8436398ea6242dd04d9a906c9da7fcd467f7375719200fea8b2a51d79488ec12e4b234c1745ee6c5765c4c0e86b78083245ee', 'SuperAdmin', '2025-01-19', '02:36:44 PM');
 
 -- --------------------------------------------------------
@@ -74,20 +74,11 @@ CREATE TABLE `admin_cart` (
   `id` int(11) NOT NULL,
   `book_id` varchar(30) NOT NULL,
   `qty` varchar(30) NOT NULL,
-  `add_by_name` varchar(10) NOT NULL,
-  `add_by_email` varchar(150) NOT NULL,
+  `add_by_name` varchar(100) NOT NULL,
+  `add_by_email` varchar(250) NOT NULL,
   `add_date` varchar(30) NOT NULL,
   `add_time` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `admin_cart`
---
-
-INSERT INTO `admin_cart` (`id`, `book_id`, `qty`, `add_by_name`, `add_by_email`, `add_date`, `add_time`) VALUES
-(7, '5', '2', 'Admin12', 'admin@gmail.com', '2025-01-31', '05:51:16 PM'),
-(8, '7', '3', 'Admin12', 'admin@gmail.com', '2025-01-31', '05:51:17 PM'),
-(9, '4', '3', 'Admin12', 'admin@gmail.com', '2025-01-31', '05:51:17 PM');
 
 -- --------------------------------------------------------
 
@@ -118,9 +109,12 @@ CREATE TABLE `books` (
 --
 
 INSERT INTO `books` (`id`, `coverpage`, `title`, `editor`, `publisher_year`, `subject`, `isbn`, `pages`, `stock`, `language`, `actual_price`, `discounted_price`, `descr`, `add_date`, `add_time`) VALUES
+(1, '2025-01-22_asus.jpg', 'Dynamic Creative Orchestrator', 'Sint id odit.', 8787, 'Hindi', 'Sunt dolore occaecati et magni', 1210, 106, 'Windler', 100, 100, 'Autem inventore iure commodi.', '2025-01-22', '08:59:44 PM'),
+(2, '5_asus.jpg', 'National Accounts Engineer', 'Placeat architecto est ratione.', 4545, 'Hindi', 'Soluta aliquid odit.', 74858, 62, 'Hauck', 2000, 1000, 'Molestias blanditiis cupiditate.', '2025-01-22', '09:03:44 PM'),
+(3, 'CIIL7.png', 'Forward Optimization Assistant', 'Nisi fuga', 2024, 'Hindi', '85-85-85-85', 150, 50, 'Rosenbaum', 5000, 4500, 'Amet iusto iste esse ipsam.', '2025-01-31', '11:07:43 AM'),
 (4, '2025-01-22_asus.jpg', 'Dynamic Creative Orchestrator', 'Sint id odit.', 8787, 'Hindi', 'Sunt dolore occaecati et magni', 1210, 106, 'Windler', 100, 100, 'Autem inventore iure commodi.', '2025-01-22', '08:59:44 PM'),
 (5, '5_asus.jpg', 'National Accounts Engineer', 'Placeat architecto est ratione.', 4545, 'Hindi', 'Soluta aliquid odit.', 74858, 62, 'Hauck', 2000, 1000, 'Molestias blanditiis cupiditate.', '2025-01-22', '09:03:44 PM'),
-(7, 'CIIL7.png', 'Forward Optimization Assistant', 'Nisi fuga', 2024, 'Hindi', '85-85-85-85', 150, 50, 'Rosenbaum', 5000, 4500, 'Amet iusto iste esse ipsam.', '2025-01-31', '11:07:43 AM');
+(6, 'CIIL7.png', 'Forward Optimization Assistant', 'Nisi fuga', 2024, 'Hindi', '85-85-85-85', 150, 50, 'Rosenbaum', 5000, 4500, 'Amet iusto iste esse ipsam.', '2025-01-31', '11:07:43 AM');
 
 -- --------------------------------------------------------
 
@@ -19478,6 +19472,7 @@ CREATE TABLE `off_invoice` (
   `order_id` varchar(55) NOT NULL,
   `name` varchar(100) NOT NULL,
   `email` varchar(150) NOT NULL,
+  `mobile` varchar(15) NOT NULL,
   `address` varchar(300) NOT NULL,
   `state` varchar(150) NOT NULL,
   `district` varchar(150) NOT NULL,
@@ -19486,9 +19481,19 @@ CREATE TABLE `off_invoice` (
   `dis_price` varchar(30) NOT NULL,
   `shipping_charges` varchar(30) NOT NULL,
   `total_price` varchar(30) NOT NULL,
+  `add_by_name` varchar(150) NOT NULL,
+  `add_by_email` varchar(250) NOT NULL,
   `add_date` varchar(30) NOT NULL,
   `add_time` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `off_invoice`
+--
+
+INSERT INTO `off_invoice` (`id`, `invoice_no`, `order_id`, `name`, `email`, `mobile`, `address`, `state`, `district`, `pincode`, `price`, `dis_price`, `shipping_charges`, `total_price`, `add_by_name`, `add_by_email`, `add_date`, `add_time`) VALUES
+(1, 'IN-2025-1', 'OR-2025-1', 'Keven_Morar51', 'your.email+fakedata62932@gmail.com', '8982997798', '45787 Luettgen Rapids', 'Texas', '34315 Bogan Ridges', '070582', '20300', '2000', '5000', '20300', 'admin@gmail.com', '2025-02-01', 'Admin', '03:54:09 PM'),
+(2, 'IN-2025-2', 'OR-2025-2', 'Blaze44', 'your.email+fakedata30159@gmail.com', '9892898989', '71581 Anabelle Rapids', 'Kentucky', '473 Serenity Hollow', '815912', '13500', '1500', '5000', '13500', 'admin@gmail.com', '2025-02-01', 'Admin', '04:02:18 PM');
 
 -- --------------------------------------------------------
 
@@ -19499,27 +19504,38 @@ CREATE TABLE `off_invoice` (
 CREATE TABLE `off_orders` (
   `id` int(11) NOT NULL,
   `order_id` varchar(55) NOT NULL,
-  `email` varchar(150) NOT NULL,
   `bill_name` varchar(100) NOT NULL,
   `bill_email` varchar(150) NOT NULL,
+  `bill_mobile` varchar(15) NOT NULL,
   `bill_address` varchar(300) NOT NULL,
   `bill_state` varchar(150) NOT NULL,
   `bill_district` varchar(150) NOT NULL,
   `bill_pincode` varchar(10) NOT NULL,
   `off_name` varchar(100) NOT NULL,
   `off_email` varchar(150) NOT NULL,
+  `off_mobile` varchar(15) NOT NULL,
   `off_address` varchar(300) NOT NULL,
   `off_state` varchar(150) NOT NULL,
   `off_district` varchar(150) NOT NULL,
   `off_pincode` varchar(10) NOT NULL,
   `price` varchar(30) NOT NULL,
-  `dis_price` varchar(30) NOT NULL,
-  `shipping_charges` varchar(30) NOT NULL,
+  `dis_price` varchar(30) NOT NULL DEFAULT '0',
+  `shipping_charges` varchar(30) NOT NULL DEFAULT '0',
   `total_price` varchar(30) NOT NULL,
-  `txn_status` int(11) NOT NULL COMMENT '1-SUCCESS,0-FAILED',
+  `txn_status` int(11) NOT NULL COMMENT '1-SUCCESS,0-FAILED,2-CANCEL',
+  `add_by_name` varchar(150) NOT NULL,
+  `add_by_email` varchar(250) NOT NULL,
   `add_date` varchar(30) NOT NULL,
   `add_time` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `off_orders`
+--
+
+INSERT INTO `off_orders` (`id`, `order_id`, `bill_name`, `bill_email`, `bill_mobile`, `bill_address`, `bill_state`, `bill_district`, `bill_pincode`, `off_name`, `off_email`, `off_mobile`, `off_address`, `off_state`, `off_district`, `off_pincode`, `price`, `dis_price`, `shipping_charges`, `total_price`, `txn_status`, `add_by_name`, `add_by_email`, `add_date`, `add_time`) VALUES
+(1, 'OR-2025-1', 'Keven_Morar51', 'your.email+fakedata62932@gmail.com', '8982997798', '45787 Luettgen Rapids', 'Texas', '34315 Bogan Ridges', '070582', 'Mylene_Goodwin', 'your.email+fakedata16704@gmail.com', '8982997798', '850 Grant Lakes', 'Mississippi', '6651 Danielle Mill', '769945', '20300', '2000', '5000', '23300', 1, 'Admin', 'admin@gmail.com', '2025-02-01', '03:54:09 PM'),
+(2, 'OR-2025-2', 'Blaze44', 'your.email+fakedata30159@gmail.com', '9892898989', '71581 Anabelle Rapids', 'Kentucky', '473 Serenity Hollow', '815912', 'Flavio.Kozey57', 'your.email+fakedata21218@gmail.com', '9892898989', '877 Weston Ridge', 'Iowa', '85761 Haag Centers', '904481', '13500', '1500', '5000', '17000', 1, 'Admin', 'admin@gmail.com', '2025-02-01', '04:02:18 PM');
 
 -- --------------------------------------------------------
 
@@ -19536,6 +19552,16 @@ CREATE TABLE `off_order_details` (
   `add_date` varchar(30) NOT NULL,
   `add_time` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `off_order_details`
+--
+
+INSERT INTO `off_order_details` (`id`, `order_id`, `book_id`, `email`, `qty`, `add_date`, `add_time`) VALUES
+(1, 'OR-2025-1', '4', 'admin@gmail.com', '3', '2025-02-01', '03:54:09 PM'),
+(2, 'OR-2025-1', '5', 'admin@gmail.com', '2', '2025-02-01', '03:54:09 PM'),
+(3, 'OR-2025-1', '7', 'admin@gmail.com', '4', '2025-02-01', '03:54:09 PM'),
+(4, 'OR-2025-2', '7', 'admin@gmail.com', '3', '2025-02-01', '04:02:18 PM');
 
 -- --------------------------------------------------------
 
@@ -19727,13 +19753,13 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `admin_cart`
 --
 ALTER TABLE `admin_cart`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `books`
 --
 ALTER TABLE `books`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `country`
@@ -19757,19 +19783,19 @@ ALTER TABLE `invoice`
 -- AUTO_INCREMENT for table `off_invoice`
 --
 ALTER TABLE `off_invoice`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `off_orders`
 --
 ALTER TABLE `off_orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `off_order_details`
 --
 ALTER TABLE `off_order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `orders`
