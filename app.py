@@ -688,7 +688,9 @@ def adminShowCart():
         if count_cart == 0:
             return redirect(url_for('adminAddToCart'))
 
-        cursor.execute("SELECT admin_cart.book_id, admin_cart.qty, books.title,books.coverpage,books.editor FROM admin_cart JOIN books ON admin_cart.book_id = books.id")
+        total_price = 0
+
+        cursor.execute("SELECT admin_cart.book_id, admin_cart.qty, books.title,books.coverpage,books.editor, books.actual_price, books.discounted_price FROM admin_cart JOIN books ON admin_cart.book_id = books.id")
         show_result = cursor.fetchall()
         covers_folder = os.path.join(current_app.static_folder, 'coverimage')
 
@@ -701,6 +703,8 @@ def adminShowCart():
             
             if not os.path.exists(image_path):
                 book['coverpage'] = 'imagesnotfound.jpg'
+            
+            total_price += int(book['qty']) * int(book['discounted_price'])
 
         if request.method == 'POST':
             books_id = request.form['books_id']
@@ -715,9 +719,133 @@ def adminShowCart():
         cursor.close()
         conn.close()
 
-        return render_template('admin/showcart.html', count_cart=count_cart, show_result=show_result)
+        return render_template('admin/showcart.html', count_cart=count_cart, show_result=show_result, total_price=total_price)
     else:
         return redirect(url_for('adminLogin'))
+
+
+@app.route('/admin/checkout', methods=['GET', 'POST'])
+def adminCheckout():
+    if 'admin_logged_in' in session:
+        add_date, add_time = get_current_date_time()
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("SELECT admin_cart.book_id, admin_cart.qty, books.id, books.actual_price, books.discounted_price FROM admin_cart JOIN books ON admin_cart.book_id = books.id")
+        data = cursor.fetchall()
+
+        if not data:
+            return redirect(url_for('adminAddToCart'))
+
+        total_price = sum(int(item['qty']) * int(item['discounted_price']) for item in data)
+        
+        if request.method == 'POST':
+            bill_name = request.form['bill_name']
+            bill_email = request.form['bill_email']
+            bill_mobile = request.form['bill_mobile']
+            bill_address = request.form['bill_address']
+            bill_state = request.form['bill_state']
+            bill_district = request.form['bill_district']
+            bill_pincode = request.form['bill_pincode']
+            off_name = request.form['off_name']
+            off_email = request.form['off_email']
+            off_mobile = request.form['off_mobile']
+            off_address = request.form['off_address']
+            off_state = request.form['off_state']
+            off_district = request.form['off_district']
+            off_pincode = request.form['off_pincode']
+            dis_price = request.form['dis_price']
+            shipping_charges = request.form['shipping_charges']
+
+            if not all([bill_name, bill_email, bill_mobile, bill_address, bill_state, bill_district, bill_pincode, off_name, off_email, off_mobile, off_address, off_state, off_district, off_pincode, dis_price, shipping_charges]):
+                flash('All fields are required!', 'danger')
+                return redirect(url_for('adminCheckout'))
+            
+            email_regex = r"(^\w|[a-zA-Z0-9._%+-]+)@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+            mobile_regex = r"^\d{10}$"
+            pin_regex = r"^\d{6}$"
+        
+            if not re.match(email_regex, bill_email):
+                flash('Invalid billing email format!', 'danger')
+                return redirect(url_for('adminCheckout'))
+
+            if not re.match(email_regex, off_email):
+                flash('Invalid shipping email format!', 'danger')
+                return redirect(url_for('adminCheckout'))
+
+            if not re.match(mobile_regex, bill_mobile):
+                flash('Invalid billing mobile number format! Must be 10 digits.', 'danger')
+                return redirect(url_for('adminCheckout'))
+
+            if not re.match(mobile_regex, off_mobile):
+                flash('Invalid shipping mobile number format! Must be 10 digits.', 'danger')
+                return redirect(url_for('adminCheckout'))
+            
+            if not re.match(pin_regex, bill_pincode):
+                flash('Invalid shipping pincode number format! Must be 6 digits.', 'danger')
+                return redirect(url_for('adminCheckout'))
+            
+            if not re.match(pin_regex, off_pincode):
+                flash('Invalid shipping pincode number format! Must be 6 digits.', 'danger')
+                return redirect(url_for('adminCheckout'))
+            
+            if not shipping_charges.isdigit():
+                flash('Shipping charges is not an digit', 'danger')
+                return redirect(url_for('adminCheckout'))
+            
+            if not dis_price.isdigit():
+                flash('Discount price is not an digit', 'danger')
+                return redirect(url_for('adminCheckout'))
+
+            new_total_price = int(total_price) + int(shipping_charges) - int(dis_price)
+
+            txn_status = 1
+
+            current_year = datetime.now().year
+
+            cursor.execute("SELECT order_id FROM off_orders WHERE order_id LIKE %s ORDER BY order_id DESC LIMIT 1", (f"OR-{current_year}-%",))
+            last_order = cursor.fetchone()
+            
+            if last_order is None:
+                order_number = 1
+            else:
+                last_order_id = last_order['order_id']
+                order_number = int(last_order_id.split('-')[2]) + 1
+
+            order_id = f"OR-{current_year}-{order_number}"
+
+            cursor.execute("SELECT invoice_no FROM off_invoice WHERE invoice_no LIKE %s ORDER BY invoice_no DESC LIMIT 1", (f"IN-{current_year}-%",))
+            last_invoice = cursor.fetchone()
+
+            if last_invoice is None:
+                invoice_number = 1
+            else:
+                last_invoice_no = last_invoice['invoice_no']
+                invoice_number = int(last_invoice_no.split('-')[2]) + 1
+
+            invoice_no = f"IN-{current_year}-{invoice_number}"
+
+            for ordbook in data:
+                cursor.execute("INSERT INTO off_order_details (order_id, book_id, email, qty, add_date, add_time) VALUES(%s, %s, %s, %s, %s, %s)", (order_id, ordbook['book_id'], session['admin_email'], ordbook['qty'], add_date, add_time))
+
+            cursor.execute("""INSERT INTO off_orders (order_id, bill_name, bill_email, bill_mobile, bill_address, bill_state, bill_district, bill_pincode, off_name, off_email, off_mobile, off_address, off_state, off_district, off_pincode, price, dis_price, shipping_charges, total_price, txn_status, add_by_name, add_by_email, add_date, add_time) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""", (order_id, bill_name, bill_email, bill_mobile, bill_address, bill_state, bill_district, bill_pincode, off_name, off_email, off_mobile, off_address, off_state, off_district, off_pincode, total_price, dis_price, shipping_charges, new_total_price, txn_status, session['admin_name'], session['admin_email'], add_date, add_time))
+            
+            cursor.execute("INSERT INTO off_invoice (invoice_no, order_id, name, email, mobile, address, state, district, pincode, price, dis_price, shipping_charges, total_price, add_date, add_by_name, add_by_email, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (invoice_no, order_id, bill_name, bill_email, bill_mobile, bill_address, bill_state, bill_district, bill_pincode, total_price, dis_price, shipping_charges, total_price, session['admin_name'], session['admin_email'], add_date, add_time))
+            
+            cursor.execute("DELETE FROM admin_cart WHERE add_by_email = %s", (session['admin_email'],))
+            
+            conn.commit()
+
+            return redirect(url_for('adminAddToCart'))
+
+        cursor.close()
+        conn.close()
+
+        return render_template('admin/checkout.html', total_price=total_price)
+    else:
+        return redirect(url_for('adminLogin'))
+
 
 @app.errorhandler(404)
 def page_not_found(e):
