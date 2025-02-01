@@ -23,6 +23,8 @@
                                         <th>Title</th>
                                         <th>Editor</th>
                                         <th>Quantity</th>
+                                        <th>Actual Price</th>
+                                        <th>Discounted Price</th>
                                         <th>Delete</th>
                                     </tr>
                                 </thead>
@@ -35,6 +37,8 @@
                                                 <td>{{ data.title }}</td>
                                                 <td>{{ data.editor }}</td>
                                                 <td>{{ data.qty }}</td>
+                                                <td>{{ data.actual_price }}</td>
+                                                <td>{{ data.discounted_price }}</td>
                                                 <td>
                                                     <form method="POST">
                                                         <input type="hidden" name="books_id" value="{{ data.book_id }}">
@@ -50,7 +54,8 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="" class="btn btn-primary float-end">Proceed To Checkout</a>
+                    <!-- <p>{{ total_price }}</p> -->
+                    <a href="{{ url_for('adminCheckout') }}" class="btn btn-primary float-end">Proceed To Checkout</a>
                 </div>
             </div>
         </div>

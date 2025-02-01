@@ -1,0 +1,128 @@
+{% extends "admin/base.html" %}
+
+{% block admintitle %} Checkout - Admin {% endblock %}
+
+{% block admincontent %}
+
+<div class="container-fluid">
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-12">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="alert-container">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                <strong>{{ category|capitalize }}:</strong> {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <div class="card shadow mb-4">
+                <div class="card-header">Checkout</div>
+                <div class="card-body">
+                    <form action="" method="POST">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-lg-12 mt-2 mb-2">
+                                        <h5>Billing To</h5>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label>Username :</label>
+                                        <input type="text" name="bill_name" class="form-control mt-2 mb-2" placeholder="Username">
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label>E-mail Id :</label>
+                                        <input type="text" name="bill_email" class="form-control mt-2 mb-2" placeholder="E-mail Id">
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label>Mobile No. :</label>
+                                        <input type="text" name="bill_mobile" maxlength="10" class="form-control mt-2 mb-2" placeholder="Mobile No.">
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label>Address :</label>
+                                        <input type="text" name="bill_address" class="form-control mt-2 mb-2" placeholder="Address">
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label>State :</label>
+                                        <input type="text" name="bill_state" class="form-control mt-2 mb-2" placeholder="State">
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label>District :</label>
+                                        <input type="text" name="bill_district" class="form-control mt-2 mb-2" placeholder="District">
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label>Pincode :</label>
+                                        <input type="text" name="bill_pincode" maxlength="6" class="form-control mt-2 mb-2" placeholder="Pincode">
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label>Shipping Charges :</label>
+                                        <input type="text" name="shipping_charges" class="form-control mt-2 mb-2" placeholder="Shipping Charges" value="0">
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label>Payment Type :</label>
+                                        <select name="payment_type" class="form-control mt-2 mb-2">
+                                            <option hidden value="">Select Payment Type</option>
+                                            <option>Cash</option>
+                                            <option>Credit Card</option>
+                                            <option>Debit Card</option>
+                                            <option>Bank</option>
+                                            <option>UPI</option>
+                                            <option>Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-lg-12 mt-2 mb-2">
+                                        <h5>Shipping To</h5>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label>Username :</label>
+                                        <input type="text" name="off_name" class="form-control mt-2 mb-2" placeholder="Username">
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label>E-mail Id :</label>
+                                        <input type="text" name="off_email" class="form-control mt-2 mb-2" placeholder="E-mail Id">
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label>Mobile No. :</label>
+                                        <input type="text" name="off_mobile" maxlength="10" class="form-control mt-2 mb-2" placeholder="Mobile No.">
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label>Address :</label>
+                                        <input type="text" name="off_address" class="form-control mt-2 mb-2" placeholder="Address">
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label>State :</label>
+                                        <input type="text" name="off_state" class="form-control mt-2 mb-2" placeholder="State">
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label>District :</label>
+                                        <input type="text" name="off_district" class="form-control mt-2 mb-2" placeholder="District">
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label>Pincode :</label>
+                                        <input type="text" name="off_pincode" maxlength="6" class="form-control mt-2 mb-2" placeholder="Pincode">
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <label>Discount Price :</label>
+                                        <input type="text" name="dis_price" class="form-control mt-2 mb-2" placeholder="Discount Price" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 text-center mt-2 mb-2">
+                                <button type="submit" name="submit" class="btn btn-success">Pay {{ total_price }}</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
