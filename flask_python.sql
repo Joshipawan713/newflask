@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1-1.el9
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Feb 01, 2025 at 11:47 AM
--- Server version: 10.5.22-MariaDB
--- PHP Version: 8.0.30
+-- Host: 127.0.0.1
+-- Generation Time: Feb 02, 2025 at 01:19 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -29,15 +29,24 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `address` (
   `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
   `name` varchar(100) NOT NULL,
+  `mobile` varchar(15) NOT NULL,
   `email` varchar(150) NOT NULL,
   `address` varchar(300) NOT NULL,
   `state` varchar(150) NOT NULL,
   `district` varchar(150) NOT NULL,
   `pincode` varchar(10) NOT NULL,
-  `add_date` int(11) NOT NULL,
-  `add_time` int(11) NOT NULL
+  `add_date` varchar(20) NOT NULL,
+  `add_time` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `address`
+--
+
+INSERT INTO `address` (`id`, `user_id`, `name`, `mobile`, `email`, `address`, `state`, `district`, `pincode`, `add_date`, `add_time`) VALUES
+(1, 1, 'Malika_Nolan', '1179872924', 'your.email+fakedata41516@gmail.com', '6103 Schmeler Motorway', 'Ohio', '84108 Sipes Row', '998989', '2025-02-02', '05:32:10 PM');
 
 -- --------------------------------------------------------
 
@@ -19492,8 +19501,9 @@ CREATE TABLE `off_invoice` (
 --
 
 INSERT INTO `off_invoice` (`id`, `invoice_no`, `order_id`, `name`, `email`, `mobile`, `address`, `state`, `district`, `pincode`, `price`, `dis_price`, `shipping_charges`, `total_price`, `add_by_name`, `add_by_email`, `add_date`, `add_time`) VALUES
-(1, 'IN-2025-1', 'OR-2025-1', 'Keven_Morar51', 'your.email+fakedata62932@gmail.com', '8982997798', '45787 Luettgen Rapids', 'Texas', '34315 Bogan Ridges', '070582', '20300', '2000', '5000', '20300', 'admin@gmail.com', '2025-02-01', 'Admin', '03:54:09 PM'),
-(2, 'IN-2025-2', 'OR-2025-2', 'Blaze44', 'your.email+fakedata30159@gmail.com', '9892898989', '71581 Anabelle Rapids', 'Kentucky', '473 Serenity Hollow', '815912', '13500', '1500', '5000', '13500', 'admin@gmail.com', '2025-02-01', 'Admin', '04:02:18 PM');
+(1, 'IN-2025-1', 'OR-2025-1', 'Keven_Morar51', 'your.email+fakedata62932@gmail.com', '8982997798', '45787 Luettgen Rapids', 'Texas', '34315 Bogan Ridges', '070582', '20300', '2000', '5000', '20300', 'Admin', 'admin@gmail.com', '2025-02-01', '03:54:09 PM'),
+(2, 'IN-2025-2', 'OR-2025-2', 'Blaze44', 'your.email+fakedata30159@gmail.com', '9892898989', '71581 Anabelle Rapids', 'Kentucky', '473 Serenity Hollow', '815912', '13500', '1500', '5000', '13500', 'Admin', 'admin@gmail.com', '2025-02-01', '04:02:18 PM'),
+(3, 'IN-2025-3', 'OR-2025-3', 'Morgan85', 'your.email+fakedata88272@gmail.com', '9929979778', '18663 Keebler Via', 'Idaho', '5620 Jerde Burg', '343511', '1000', '200', '500', '1000', 'Admin', 'admin@gmail.com', '2025-02-01', '09:55:59 PM');
 
 -- --------------------------------------------------------
 
@@ -19522,7 +19532,7 @@ CREATE TABLE `off_orders` (
   `dis_price` varchar(30) NOT NULL DEFAULT '0',
   `shipping_charges` varchar(30) NOT NULL DEFAULT '0',
   `total_price` varchar(30) NOT NULL,
-  `txn_status` int(11) NOT NULL COMMENT '1-SUCCESS,0-FAILED,2-CANCEL',
+  `txn_status` int(11) NOT NULL COMMENT '1-SUCCESS,0-CANCEL',
   `add_by_name` varchar(150) NOT NULL,
   `add_by_email` varchar(250) NOT NULL,
   `add_date` varchar(30) NOT NULL,
@@ -19535,7 +19545,8 @@ CREATE TABLE `off_orders` (
 
 INSERT INTO `off_orders` (`id`, `order_id`, `bill_name`, `bill_email`, `bill_mobile`, `bill_address`, `bill_state`, `bill_district`, `bill_pincode`, `off_name`, `off_email`, `off_mobile`, `off_address`, `off_state`, `off_district`, `off_pincode`, `price`, `dis_price`, `shipping_charges`, `total_price`, `txn_status`, `add_by_name`, `add_by_email`, `add_date`, `add_time`) VALUES
 (1, 'OR-2025-1', 'Keven_Morar51', 'your.email+fakedata62932@gmail.com', '8982997798', '45787 Luettgen Rapids', 'Texas', '34315 Bogan Ridges', '070582', 'Mylene_Goodwin', 'your.email+fakedata16704@gmail.com', '8982997798', '850 Grant Lakes', 'Mississippi', '6651 Danielle Mill', '769945', '20300', '2000', '5000', '23300', 1, 'Admin', 'admin@gmail.com', '2025-02-01', '03:54:09 PM'),
-(2, 'OR-2025-2', 'Blaze44', 'your.email+fakedata30159@gmail.com', '9892898989', '71581 Anabelle Rapids', 'Kentucky', '473 Serenity Hollow', '815912', 'Flavio.Kozey57', 'your.email+fakedata21218@gmail.com', '9892898989', '877 Weston Ridge', 'Iowa', '85761 Haag Centers', '904481', '13500', '1500', '5000', '17000', 1, 'Admin', 'admin@gmail.com', '2025-02-01', '04:02:18 PM');
+(2, 'OR-2025-2', 'Blaze44', 'your.email+fakedata30159@gmail.com', '9892898989', '71581 Anabelle Rapids', 'Kentucky', '473 Serenity Hollow', '815912', 'Flavio.Kozey57', 'your.email+fakedata21218@gmail.com', '9892898989', '877 Weston Ridge', 'Iowa', '85761 Haag Centers', '904481', '13500', '1500', '5000', '17000', 1, 'Admin', 'admin@gmail.com', '2025-02-01', '04:02:18 PM'),
+(3, 'OR-2025-3', 'Morgan85', 'your.email+fakedata88272@gmail.com', '9929979778', '18663 Keebler Via', 'Idaho', '5620 Jerde Burg', '343511', 'Lora88', 'your.email+fakedata73357@gmail.com', '9929979778', '979 Imogene Cove', 'Nevada', '533 Howe Knoll', '911871', '1000', '200', '500', '1300', 1, 'Admin', 'admin@gmail.com', '2025-02-01', '09:55:59 PM');
 
 -- --------------------------------------------------------
 
@@ -19561,7 +19572,8 @@ INSERT INTO `off_order_details` (`id`, `order_id`, `book_id`, `email`, `qty`, `a
 (1, 'OR-2025-1', '4', 'admin@gmail.com', '3', '2025-02-01', '03:54:09 PM'),
 (2, 'OR-2025-1', '5', 'admin@gmail.com', '2', '2025-02-01', '03:54:09 PM'),
 (3, 'OR-2025-1', '7', 'admin@gmail.com', '4', '2025-02-01', '03:54:09 PM'),
-(4, 'OR-2025-2', '7', 'admin@gmail.com', '3', '2025-02-01', '04:02:18 PM');
+(4, 'OR-2025-2', '7', 'admin@gmail.com', '3', '2025-02-01', '04:02:18 PM'),
+(5, 'OR-2025-3', '5', 'admin@gmail.com', '1', '2025-02-01', '09:55:59 PM');
 
 -- --------------------------------------------------------
 
@@ -19626,7 +19638,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `mobile`, `password`, `account_type`, `status`, `add_date`, `add_time`) VALUES
-(1, 'Alayna_Romaguera12', 'test@gmail.com', '9745874587', 'scrypt:32768:8:1$IolJED6MbDWSYKFS$88b43ed3b361704a9c1d11bb30a8436398ea6242dd04d9a906c9da7fcd467f7375719200fea8b2a51d79488ec12e4b234c1745ee6c5765c4c0e86b78083245ee', 'Organisation', 'Active', '2025-01-19', '02:36:44 PM'),
+(1, 'Alayna_Romaguera', 'test@gmail.com', '9745874587', 'scrypt:32768:8:1$e05ULBgMEThHZNTZ$81a1bb9d47da06cdfb6d1f58c21adf33eb1520a226ec3f582c62822a997a803b3cda6e01fe9def98cdeea9d1b4b8d4f59b5672e60f2a9e77f4f8ad1db179ead8', 'Organisation', 'Active', '2025-01-19', '02:36:44 PM'),
 (2, 'Owen.Volkman', 'your.email+fakedata70875@gmail.com', '8547854785', 'scrypt:32768:8:1$Rmnoa2kTXkiqkvNf$21d2f5fce038df6f9328babb36fda517a0af50bfad031dd382c7fc4fc7c8b3fbc7e293bc7918590b4152ad54630bb915ceb2aaf5abfb21df4aedd7cbeed909dc', 'Personal', 'Active', '2025-01-19', '02:36:44 PM');
 
 -- --------------------------------------------------------
@@ -19741,7 +19753,7 @@ ALTER TABLE `user_cart`
 -- AUTO_INCREMENT for table `address`
 --
 ALTER TABLE `address`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `admin`
@@ -19753,7 +19765,7 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `admin_cart`
 --
 ALTER TABLE `admin_cart`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `books`
@@ -19783,19 +19795,19 @@ ALTER TABLE `invoice`
 -- AUTO_INCREMENT for table `off_invoice`
 --
 ALTER TABLE `off_invoice`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `off_orders`
 --
 ALTER TABLE `off_orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `off_order_details`
 --
 ALTER TABLE `off_order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `orders`
