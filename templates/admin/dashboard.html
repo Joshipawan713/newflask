@@ -83,7 +83,7 @@
                                             {% for day in week %}
                                                 <td>
                                                     {% if day != 0 %}
-                                                        <a href="javascript:void(0)" class="text-decoration-none text-dark" {% if day == current_date and month == now.month and year == now.year %} style="background-color: #aabfaa;font-weight: bold;border-radius: 50%;padding: 5px;" {% endif %}>{{ day }}</a>
+                                                        <a href="javascript:void(0)" class="text-decoration-none text-dark" {% if day == current_date and month == now.month and year == now.year %} style="background-color: #aabfaa;font-weight: bold;border-radius: 50%;padding: 0px 5px;" {% endif %}>{{ day }}</a>
                                                     {% endif %}
                                                 </td>
                                             {% endfor %}

@@ -1,0 +1,61 @@
+{% extends "admin/base.html" %}
+
+{% block admintitle %} Offline Invoice - Admin {% endblock %}
+
+{% block admincontent %}
+
+<div class="container-fluid">
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header">Offline Invoice</div>
+                <div class="card-body p-0">
+                    <table class="table table-bordered table-striped align-middle text-center mb-0">
+                        <thead>
+                            <tr>
+                                <th>Invoice_No</th>
+                                <th>Order_Id</th>
+                                <th>Name</th>
+                                <th>E-mail</th>
+                                <th>Mobile</th>
+                                <th>Address</th>
+                                <th>Price</th>
+                                <th>Discount_Price</th>
+                                <th>Shipping_Charges</th>
+                                <th>Total_Price</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if data %}
+                                {% for invdata in data %}
+                                    <tr>
+                                        <td>{{ invdata.invoice_no }}</td>
+                                        <td>{{ invdata.order_id }}</td>
+                                        <td>{{ invdata.name }}</td>
+                                        <td>{{ invdata.email }}</td>
+                                        <td>{{ invdata.mobile }}</td>
+                                        <td>{{ invdata.address }}</td>
+                                        <td>{{ invdata.price }}</td>
+                                        <td>{{ invdata.dis_price }}</td>
+                                        <td>{{ invdata.shipping_charges }}</td>
+                                        <td>{{ invdata.total_price }}</td>
+                                        <td>{{ invdata.add_date }}</td>
+                                        <td>{{ invdata.add_time }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                    <tr>
+                                        <td colspan="12">No Data Found</td>
+                                    </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
