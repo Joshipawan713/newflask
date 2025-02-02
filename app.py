@@ -14,12 +14,14 @@ app = Flask(__name__)
 # app.secret_key = secrets.token_hex(16)
 app.secret_key = 'you_secret_key'
 
+
+# database connection start
 def get_db_connection():
     try:
         conn = mysql.connector.connect(
             host='localhost',
             user='root',
-            password='Sdk@1259',
+            password='',
             database='flask_python'
         )
         if conn.is_connected():
@@ -28,7 +30,8 @@ def get_db_connection():
     except mysql.connector.Error as err:
         print(f"Error: {err}")
         return None
-    
+
+# database connection end
 
 # # custom login_required 
 # # use @login_required('login')
@@ -41,10 +44,14 @@ def get_db_connection():
 #         return wrapper
 #     return decorator
     
+# add date and add time start
 def get_current_date_time():
     now = datetime.now()
     return now.strftime('%Y-%m-%d'), now.strftime('%I:%M:%S %p')
 
+# add date and add time end
+
+# user start
 @app.route('/')
 def index():
     conn = get_db_connection()
@@ -68,8 +75,51 @@ def index():
     
     cursor.close()
     conn.close()
-
     return render_template('index.html', data=data)
+
+@app.route('/bookstore')
+def bookstore():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute('SELECT * FROM books')
+    data = cursor.fetchall()
+    covers_folder = os.path.join(current_app.static_folder, 'coverimage')
+    
+    for book in data:
+        image_filename = book.get('coverpage')
+        image_path = os.path.join(covers_folder, image_filename)
+        
+        if not image_filename or image_filename.strip() == "":
+            book['coverpage'] = 'imagesnotfound.jpg'
+            
+        if not os.path.exists(image_path):
+            book['coverpage'] = 'imagesnotfound.jpg'
+    
+    cursor.close()
+    conn.close()
+    
+    return render_template('bookstore.html', data=data)
+
+@app.route('/bookdetails/<int:book_id>', methods=['GET', 'POST'])
+def bookDetails(book_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute('SELECT * FROM books WHERE id = %s', (book_id,))
+    data = cursor.fetchone()
+    
+    covers_folder = os.path.join(current_app.static_folder, 'coverimage')
+    image_filename = data.get('coverpage')
+    image_path = os.path.join(covers_folder, image_filename)
+    if not image_filename or image_filename.strip() == "":
+        data['coverpage'] = 'imagesnotfound.jpg'
+            
+    if not os.path.exists(image_path):
+        data['coverpage'] = 'imagesnotfound.jpg'
+    
+    cursor.close()
+    conn.close()
+
+    return render_template('bookdetails.html', book_id=book_id, data=data)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -136,19 +186,27 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
+        
+        if not all([email, password]):
+            flash('Email and password not empty', 'danger')
+            return redirect(url_for('login'))
+            
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users WHERE email= %s && status='Active'", (email,))
+        cursor.execute("SELECT * FROM users WHERE email= %s", (email,))
         user = cursor.fetchone()
         if user:
-            if check_password_hash(user[4], password):
-                session['logged_in'] = True
-                session['user_id'] = user[0]
-                session['name'] = user[1]
-                session['email'] = user[2]
-                return redirect(url_for('index'))
+            if user[6] == "Active":
+                if check_password_hash(user[4], password):
+                    session['user_logged_in'] = True
+                    session['user_id'] = user[0]
+                    session['name'] = user[1]
+                    session['email'] = user[2]
+                    return redirect(url_for('index'))
+                else:
+                    flash('Invalid password!', 'danger')
             else:
-                flash('Invalid password!', 'danger')
+                flash('Your account is deactive!', 'danger')
         else:
             flash('Email not found!', 'danger')
     return render_template('login.html')
@@ -158,6 +216,132 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
+@app.route('/profile', methods=['GET', 'POST'])
+def userProfile():
+    if 'user_logged_in' in session:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM users WHERE id = %s", (session['user_id'],))
+        data = cursor.fetchone()
+        
+        if request.method == 'POST':
+            name = request.form['name']
+            mobile = request.form['mobile']
+            
+            if not all([name, mobile]):
+                flash('Name and mobile not empty', 'danger')
+                return redirect(url_for('userProfile'))
+            
+            mobile_regex = r"^\d{10}$"
+        
+            if not re.match(mobile_regex, mobile):
+                flash('Invalid mobile number format! Must be 10 digits.', 'danger')
+                return redirect(url_for('userProfile'))
+            
+            cursor.execute("UPDATE users SET name = %s, mobile = %s WHERE id = %s", (name,mobile,session['user_id']))
+            conn.commit()
+            
+            flash('Profile Updated Successfully', 'success')
+            return redirect(url_for('userProfile'))
+        
+        cursor.close()
+        conn.close()
+        
+        return render_template('profile.html', data=data)
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/changepassword', methods=['GET', 'POST'])
+def userChangePassword():
+    if 'user_logged_in' in session:
+        if request.method == 'POST':
+            old_pass = request.form['old_pass']
+            new_pass = request.form['new_pass']
+            repeat_pass = request.form['repeat_pass']
+            
+            if not all([old_pass, new_pass, repeat_pass]):
+                flash('All fields are required', 'danger')
+                return redirect(url_for('userChangePassword'))
+            
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("SELECT * FROM users WHERE id = %s", (session['user_id'],))
+            users = cursor.fetchone()
+            if users:
+                if new_pass == repeat_pass:
+                    if check_password_hash(users['password'], old_pass):
+                        hashed_password = generate_password_hash(new_pass)
+                        cursor.execute("UPDATE users SET password = %s WHERE id = %s", (hashed_password, session['user_id']))
+                        conn.commit()
+                        flash('Password Chnage Successfully', 'success')
+                        return redirect(url_for('userChangePassword'))
+                    else:
+                        flash('Old Password are incorrect', 'danger')
+                        return redirect(url_for('userChangePassword'))
+                else:
+                    flash('New and Repeat Password are incorrect', 'danger')
+                    return redirect(url_for('userChangePassword'))
+            else:
+                flash('User Not Exist', 'danger')
+                return redirect(url_for('userChangePassword'))
+                
+            cursor.close()
+            conn.close()
+        return render_template('changepassword.html')
+    else:
+        return redirect(url_for('login'))
+    
+@app.route('/address', methods=['GET', 'POST'])
+def userAddress():
+    if 'user_logged_in' in session:
+        if request.method == 'POST':
+            add_date, add_time = get_current_date_time()
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+            # cursor.execute("SELECT * FROM users WHERE id = %s", (session['user_id'],))
+            
+            name = request.form['name']
+            mobile = request.form['mobile']
+            email = request.form['email']
+            address = request.form['address']
+            state = request.form['state']
+            district = request.form['district']
+            pincode = request.form['pincode']
+            
+            if not all([name, mobile, email, address, state, district, pincode]):
+                flash('All Fields are required', 'danger')
+                return redirect(url_for('userAddress'))
+            
+            email_regex = r"(^\w|[a-zA-Z0-9._%+-]+)@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+            if not re.match(email_regex, email):
+                flash('Invalid email format!', 'danger')
+                return redirect(url_for('userAddress'))
+            
+            mobile_regex = r"^\d{10}$"
+            if not re.match(mobile_regex, mobile):
+                flash('Mobile Number format! Must be 10 digits.', 'danger')
+                return redirect(url_for('userAddress'))
+            
+            pincode_regex = r"^\d{6}$"
+            if not re.match(pincode_regex, pincode):
+                flash('Pincode Format! Must be 6 digit', 'danger')
+                return redirect(url_for('userAddress'))
+            
+            cursor.execute("INSERT INTO address (user_id, name, mobile, email, address, state, district, pincode, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (session['user_id'], name, mobile, email, address, state, district, pincode, add_date, add_time))
+            
+            conn.commit()
+            flash('Address added Successfully', 'success')
+            
+            cursor.close()
+            conn.close()
+                
+        return render_template('address.html')
+    else:
+        return redirect(url_for('login'))
+
+# user start
+
+# admin start
 @app.route('/admin/', methods=['GET', 'POST'])
 def adminLogin():
     if request.method == 'POST':
@@ -206,6 +390,8 @@ def adminLogout():
     session.pop('admin_email', None)
     return redirect(url_for('adminLogin'))
 
+
+
 @app.route('/admin/profile', methods=['GET', 'POST'])
 def adminProfile():
     if 'admin_logged_in' in session:
@@ -241,7 +427,6 @@ def adminProfile():
 @app.route('/admin/changepassword', methods=['GET', 'POST'])
 def adminChangePassword():
     if 'admin_logged_in' in session:
-        add_date, add_time = get_current_date_time()
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM admin WHERE id = %s", (session['admin_user_id'],))
@@ -831,7 +1016,7 @@ def adminCheckout():
             cursor.execute("""INSERT INTO off_orders (order_id, bill_name, bill_email, bill_mobile, bill_address, bill_state, bill_district, bill_pincode, off_name, off_email, off_mobile, off_address, off_state, off_district, off_pincode, price, dis_price, shipping_charges, total_price, txn_status, add_by_name, add_by_email, add_date, add_time) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""", (order_id, bill_name, bill_email, bill_mobile, bill_address, bill_state, bill_district, bill_pincode, off_name, off_email, off_mobile, off_address, off_state, off_district, off_pincode, total_price, dis_price, shipping_charges, new_total_price, txn_status, session['admin_name'], session['admin_email'], add_date, add_time))
             
-            cursor.execute("INSERT INTO off_invoice (invoice_no, order_id, name, email, mobile, address, state, district, pincode, price, dis_price, shipping_charges, total_price, add_date, add_by_name, add_by_email, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (invoice_no, order_id, bill_name, bill_email, bill_mobile, bill_address, bill_state, bill_district, bill_pincode, total_price, dis_price, shipping_charges, total_price, session['admin_name'], session['admin_email'], add_date, add_time))
+            cursor.execute("INSERT INTO off_invoice (invoice_no, order_id, name, email, mobile, address, state, district, pincode, price, dis_price, shipping_charges, total_price, add_by_name, add_by_email, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (invoice_no, order_id, bill_name, bill_email, bill_mobile, bill_address, bill_state, bill_district, bill_pincode, total_price, dis_price, shipping_charges, total_price, session['admin_name'], session['admin_email'], add_date, add_time))
             
             cursor.execute("DELETE FROM admin_cart WHERE add_by_email = %s", (session['admin_email'],))
             
@@ -846,6 +1031,30 @@ def adminCheckout():
     else:
         return redirect(url_for('adminLogin'))
 
+
+@app.route('/admin/offlineorders')
+def adminOfflineOrders():
+    if 'admin_logged_in' in session:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM off_orders WHERE txn_status = 1")
+        data = cursor.fetchall()
+        return render_template('admin/offlineorders.html', data=data)
+    else:
+        return redirect(url_for('adminLogin'))
+
+@app.route('/admin/offlineinvoice')
+def adminOfflineInvoice():
+    if 'admin_logged_in' in session:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM off_invoice")
+        data = cursor.fetchall()
+        return render_template('admin/offlineinvoice.html', data=data)
+    else:
+        return redirect(url_for('adminLogin'))
+
+# admin end
 
 @app.errorhandler(404)
 def page_not_found(e):
