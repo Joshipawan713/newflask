@@ -18,7 +18,7 @@
                 <h2>Best selling books</h2>
             </div>
             {% for book in data %}
-            <div class="col-xl-2">
+            <div class="col-xl-2 col-lg-4 col-md-6 mt-2 mb-2">
                 <div class="card h-100">
                     <img src="{{ url_for('static', filename='coverimage/' + book.coverpage) }}" alt="{{ book.title }}" class="card-img-top" style="height: 300px;">
                     <div class="card-body">
@@ -35,7 +35,7 @@
                                 </div>
                             {% else %}
                                 <div style="border-radius: 5px; margin: 5px;" class="bg-success text-white">
-                                    <a href="javascript:void(0)" style="padding: 2px 7px; font-size: 13px;" class="text-decoration-none text-white">Details</a>
+                                    <a href="{{ url_for('bookDetails', book_id=book.id) }}" style="padding: 2px 7px; font-size: 13px;" class="text-decoration-none text-white">Details</a>
                                 </div>
                             {% endif %}
                         </div>

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %} Cart {% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row mt-4 mb-4">
+        <div class="col-lg-12 mt-2 mb-2">
+            <div class="row">
+                {% if cart_data %}
+                    <div class="col-lg-9">
+                        <div class="card">
+                            <div class="card-header">Order Summary</div>
+                            <div class="card-body">
+                                {% for data in cart_data %}
+                                <form method="POST">
+                                <div class="row mt-2 mb-2">
+                                    <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+                                        <div class="bg-image hover-overlay hover-zoom ripple rounded" data-mdb-ripple-color="light">
+                                                <img src="{{ url_for('static', filename='coverimage/' + data.coverpage) }}" class="w-100" alt="{{ data.title }}" style="height: 300px;">
+                                                <a href="javascript:void(0)">
+                                                    <div class="mask" style="background-color: rgba(251, 251, 251, 0.2)"></div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-5 col-md-6 mb-4 mb-lg-0">
+                                            <p><strong>{{ data.title }}</strong></p>
+                                            <p>Subject: {{ data.subject }}</p>
+                                            <p>Publisher Year: {{ data.publisher_year }}</p>
+                                            <button type="submit" name="delete" value="{{ data.book_id }}" class="btn btn-danger btn-sm me-1 mb-2" data-mdb-toggle="tooltip" title="Remove item"><i class="fa fa-trash"></i></button>
+                                        </div>
+                                        <div class="col-lg-4 col-md-6 mb-4 mb-lg-0 text-center">
+                                            <label class="form-label" for="form1">Quantity</label>
+                                                <div class="d-flex mb-4" style="max-width: 3000px">
+                                                    <button type="submit" name="less" value="{{ data.book_id }}" class="btn btn-light border-secondary px-3 me-2"><i class="fa fa-minus"></i></button>
+                                                    <div class="form-outline">
+                                                        <input type="hidden" name="book_id" value="{{ data.book_id }}">
+                                                        <input id="form1" min="1" name="qty" value="{{ data.qty }}" type="number" readonly class="form-control text-center">
+                                                    </div>
+                                                    <button type="submit" name="add" value="{{ data.book_id }}" class="btn btn-light border-secondary px-3 ms-2"><i class="fa fa-plus"></i></button>
+                                                </div>
+                                                <p class="text-start text-md-center">
+                                                    <strong><i class="fa fa-inr"></i> {{ data.discounted_price }} X {{ data.qty }} = <i class="fa fa-inr"></i> {{ data.price }} </strong>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                    </form>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="card">
+                            <div class="card-header">Price Summary</div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        Products<span>₹ {{ total_price }}</span>
+                                    </li>
+                                    
+                                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+                                        G.S.T @ 3% <span>₹ {{ total_price * 3 / 100 }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+                                        <div>
+                                            <strong>Total amount </strong>
+                                        </div>
+                                        <span><strong>₹ {{ total_price + total_price * 3 / 100 | round(0) }}</strong></span>
+                                    </li>
+                                </ul>
+                                <form action="" method="POST">
+                                    <button type="submit" name="pay_now" class="btn btn-primary w-100">Go to checkout</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="col-lg-12 mt-2 mb-2 text-center">
+                        <div class="alert alert-danger" role="alert">
+                            No Data Found
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

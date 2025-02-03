@@ -10,7 +10,7 @@
                 <h2>Bookstore</h2>
             </div>
             {% for book in data %}
-            <div class="col-xl-3 col-md-6">
+            <div class="col-xl-2 col-lg-4 col-md-6 mt-2 mb-2">
                 <div class="card h-100">
                     <img src="{{ url_for('static', filename='coverimage/' + book.coverpage) }}" alt="{{ book.title }}" class="card-img-top" style="height: 300px;">
                     <div class="card-body">
