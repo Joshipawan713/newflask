@@ -20,7 +20,7 @@ def get_db_connection():
         conn = mysql.connector.connect(
             host='localhost',
             user='root',
-            password='Sdk@1259',
+            password='',
             database='flask_python'
         )
         if conn.is_connected():
@@ -213,6 +213,13 @@ def userCart():
             total_price += int(books['discounted_price']) * int(books['qty'])
 
         return render_template('cart.html', cart_data=cart_data, total_price=total_price)
+    else:
+        return redirect(url_for('login'))
+    
+@app.route('/checkout', methods=['GET', 'POST'])
+def userCheckout():
+    if 'user_logged_in' in session and 'user_id' in session and 'email' in session:
+        return render_template('checkout.html')
     else:
         return redirect(url_for('login'))
 
