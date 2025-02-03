@@ -4,11 +4,10 @@ import mysql.connector
 from mysql.connector import Error
 from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
-from datetime import datetime, timedelta
 import re
 from werkzeug.utils import secure_filename
 import calendar
-from datetime import datetime
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 # app.secret_key = secrets.token_hex(16)
@@ -21,11 +20,11 @@ def get_db_connection():
         conn = mysql.connector.connect(
             host='localhost',
             user='root',
-            password='',
+            password='Sdk@1259',
             database='flask_python'
         )
         if conn.is_connected():
-            print("Connected Successfully")
+            pass
         return conn
     except mysql.connector.Error as err:
         print(f"Error: {err}")
@@ -52,6 +51,19 @@ def get_current_date_time():
 # add date and add time end
 
 # user start
+@app.context_processor
+def inject_cart_count():
+    if 'user_logged_in' in session and 'user_id' in session and 'email' in session:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT COUNT(id) as cart_count FROM user_cart WHERE user_id = %s and email = %s", (session['user_id'], session['email']))
+        result = cursor.fetchone()
+        conn.close()
+        return {'cart_count': result['cart_count']}
+    else:
+        return {'cart_count': 0}
+
+
 @app.route('/')
 def index():
     conn = get_db_connection()
@@ -102,12 +114,14 @@ def bookstore():
 
 @app.route('/bookdetails/<int:book_id>', methods=['GET', 'POST'])
 def bookDetails(book_id):
+    add_date, add_time = get_current_date_time()
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     cursor.execute('SELECT * FROM books WHERE id = %s', (book_id,))
     data = cursor.fetchone()
     
     covers_folder = os.path.join(current_app.static_folder, 'coverimage')
+
     image_filename = data.get('coverpage')
     image_path = os.path.join(covers_folder, image_filename)
     if not image_filename or image_filename.strip() == "":
@@ -115,11 +129,92 @@ def bookDetails(book_id):
             
     if not os.path.exists(image_path):
         data['coverpage'] = 'imagesnotfound.jpg'
-    
+
+    cursor.execute("SELECT * FROM books WHERE (subject = %s OR language = %s) AND id != %s", (data['subject'], data['language'], book_id))
+    reldata = cursor.fetchall()
+
+    for bookdata in reldata:
+        relimage_filename = bookdata.get('coverpage')
+        relimage_path = os.path.join(covers_folder,relimage_filename)
+
+        if not relimage_filename or relimage_filename.strip() == "":
+            bookdata['coverpage'] = 'imagesnotfound.jpg'
+
+        if not os.path.exists(relimage_path):
+            bookdata['coverpage'] = 'imagesnotfound.jpg'
+
+    if request.method == 'POST':
+        if 'user_logged_in' in session:
+            cursor.execute("SELECT * FROM user_cart WHERE user_id = %s and email = %s and book_id = %s", (session['user_id'], session['email'], book_id))
+            check_cart = cursor.fetchone()
+            print(check_cart)
+            if not check_cart:
+                qty = 1
+                cart_type = 'Cart'
+                cursor.execute("INSERT INTO user_cart (user_id, email, book_id, qty, cart_type, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s)", (session['user_id'], session['email'], book_id, qty, cart_type, add_date, add_time))
+                conn.commit()
+            else:
+                qty = int(check_cart['qty']) + 1
+                cursor.execute("UPDATE user_cart SET qty = %s WHERE user_id = %s and email = %s and book_id = %s", (qty, session['user_id'], session['email'], book_id))
+                conn.commit()
+        else:
+            return redirect(url_for('login'))
+
     cursor.close()
     conn.close()
 
-    return render_template('bookdetails.html', book_id=book_id, data=data)
+    return render_template('bookdetails.html', book_id=book_id, data=data, reldata=reldata)
+
+@app.route('/cart', methods=['GET', 'POST'])
+def userCart():
+    if 'user_logged_in' in session and 'user_id' in session and 'email' in session:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        if request.method == 'POST':
+            book_id = request.form.get('less') or request.form.get('add') or request.form.get('delete')
+            if book_id:
+                cursor.execute("SELECT qty FROM user_cart WHERE book_id = %s AND user_id = %s AND email = %s", (book_id, session['user_id'], session['email']))
+                cart_item = cursor.fetchone()
+
+                if cart_item:
+                    current_qty = int(cart_item['qty'])
+
+                    if request.form.get('less') and current_qty > 1:
+                        new_qty = current_qty - 1
+                        cursor.execute("UPDATE user_cart SET qty = %s WHERE book_id = %s AND user_id = %s AND email = %s",(new_qty, book_id, session['user_id'], session['email']))
+                        conn.commit()
+
+                    elif request.form.get('add'):
+                        new_qty = current_qty + 1
+                        cursor.execute("UPDATE user_cart SET qty = %s WHERE book_id = %s AND user_id = %s AND email = %s", (new_qty, book_id, session['user_id'], session['email']))
+                        conn.commit()
+
+                    elif request.form.get('delete'):
+                        cursor.execute("DELETE FROM user_cart WHERE book_id = %s AND user_id = %s AND email = %s", (book_id, session['user_id'], session['email']))
+                        conn.commit()
+
+        cursor.execute("SELECT books.id, books.coverpage, books.title, books.subject, books.publisher_year, books.discounted_price, user_cart.user_id, user_cart.email, user_cart.book_id, user_cart.qty FROM user_cart JOIN books ON books.id = user_cart.book_id WHERE user_cart.user_id = %s and user_cart.email = %s", (session['user_id'], session['email']))
+        cart_data = cursor.fetchall()
+        total_price = 0
+        covers_folder = os.path.join(current_app.static_folder, 'coverimage')
+        for books in cart_data:
+            image_filename = books.get('coverpage')
+            image_path = os.path.join(covers_folder, image_filename)
+
+            if not image_filename or image_filename.strip() == "":
+                books['coverpage'] = "imagesnotfound.jpg"
+
+            if not os.path.exists(image_path):
+                books['coverpage'] = "imagesnotfound.jpg"
+
+            books['price'] = int(books['discounted_price']) * int(books['qty'])
+            
+            total_price += int(books['discounted_price']) * int(books['qty'])
+
+        return render_template('cart.html', cart_data=cart_data, total_price=total_price)
+    else:
+        return redirect(url_for('login'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -218,7 +313,7 @@ def logout():
 
 @app.route('/profile', methods=['GET', 'POST'])
 def userProfile():
-    if 'user_logged_in' in session:
+    if 'user_logged_in' in session and 'user_id' in session and 'email' in session:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM users WHERE id = %s", (session['user_id'],))
@@ -253,7 +348,7 @@ def userProfile():
 
 @app.route('/changepassword', methods=['GET', 'POST'])
 def userChangePassword():
-    if 'user_logged_in' in session:
+    if 'user_logged_in' in session and 'user_id' in session and 'email' in session:
         if request.method == 'POST':
             old_pass = request.form['old_pass']
             new_pass = request.form['new_pass']
@@ -293,7 +388,7 @@ def userChangePassword():
     
 @app.route('/address', methods=['GET', 'POST'])
 def userAddress():
-    if 'user_logged_in' in session:
+    if 'user_logged_in' in session and 'user_id' in session and 'email' in session:
         if request.method == 'POST':
             add_date, add_time = get_current_date_time()
             conn = get_db_connection()
@@ -1056,9 +1151,13 @@ def adminOfflineInvoice():
 
 # admin end
 
+# page not found start
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
+
+# page not found end
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
