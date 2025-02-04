@@ -20,7 +20,7 @@ def get_db_connection():
         conn = mysql.connector.connect(
             host='localhost',
             user='root',
-            password='Sdk@1259',
+            password='',
             database='flask_python'
         )
         if conn.is_connected():
@@ -223,7 +223,7 @@ def userCheckout():
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
 
-        cursor.execute("SELECT books.id, books.coverpage, books.title, books.subject, books.publisher_year, books.discounted_price, user_cart.user_id, user_cart.email, user_cart.book_id, user_cart.qty FROM user_cart JOIN books ON books.id = user_cart.book_id WHERE user_cart.user_id = %s and user_cart.email = %s", (session['user_id'], session['email']))
+        cursor.execute("SELECT books.id, books.coverpage, books.title, books.subject, books.stock, books.publisher_year, books.discounted_price, user_cart.user_id, user_cart.email, user_cart.book_id, user_cart.qty FROM user_cart JOIN books ON books.id = user_cart.book_id WHERE user_cart.user_id = %s and user_cart.email = %s", (session['user_id'], session['email']))
         data = cursor.fetchall()
 
         if not data:
@@ -300,7 +300,14 @@ def userCheckout():
             invoice_no = f"IN-ON-{current_year}-{invoice_number}"
 
             for orddet in data:
+                stock = int(orddet['stock']) - int(orddet['qty'])
+                stock_type = 'Online_Sell'
+                # stock = 1
                 cursor.execute("INSERT INTO order_details (order_id, book_id, user_id, email, qty, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s)", (order_id, orddet['book_id'], session['user_id'], session['email'], orddet['qty'], add_date, add_time))
+                
+                cursor.execute("UPDATE books SET stock = %s WHERE id = %s", (stock, orddet['book_id']))
+                
+                cursor.execute("INSERT INTO inventory (book_id, old_stock, in_out_stock, total_stock, stock_type, add_by_name, add_by_email, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", (orddet['book_id'], orddet['stock'], orddet['qty'], stock, stock_type, session['name'], session['email'], add_date, add_time))
 
             cursor.execute("INSERT INTO orders (order_id, user_id, user_email, name, email, mobile, address, state, district, pincode, price, dis_price, shipping_charges, handling_charges, total_price, txn_status, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (order_id, session['user_id'], session['email'], name, email, mobile, address, state, district, pincode, total_price, dis_price, shipping_charges, handling_charges, new_total_price, txn_status, add_date, add_time))
 
@@ -580,6 +587,7 @@ def adminLogin():
             flash('Admin not found!', 'danger')
     return render_template('admin/index.html')
 
+@app.route('/admin/index')
 @app.route('/admin/dashboard')
 def adminDashboard():
     if 'admin_logged_in' in session:
@@ -1132,7 +1140,7 @@ def adminCheckout():
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
 
-        cursor.execute("SELECT admin_cart.book_id, admin_cart.qty, books.id, books.actual_price, books.discounted_price FROM admin_cart JOIN books ON admin_cart.book_id = books.id")
+        cursor.execute("SELECT admin_cart.book_id, admin_cart.qty, books.stock, books.id, books.actual_price, books.discounted_price FROM admin_cart JOIN books ON admin_cart.book_id = books.id")
         data = cursor.fetchall()
 
         if not data:
@@ -1227,7 +1235,13 @@ def adminCheckout():
             invoice_no = f"IN-{current_year}-{invoice_number}"
 
             for ordbook in data:
+                stock = int(ordbook['stock']) - int(ordbook['qty'])
+                stock_type = 'Offline_Sell'
                 cursor.execute("INSERT INTO off_order_details (order_id, book_id, email, qty, add_date, add_time) VALUES(%s, %s, %s, %s, %s, %s)", (order_id, ordbook['book_id'], session['admin_email'], ordbook['qty'], add_date, add_time))
+                
+                cursor.execute("UPDATE books SET stock = %s WHERE id = %s", (stock, ordbook['book_id']))
+                
+                cursor.execute("INSERT INTO inventory (book_id, old_stock, in_out_stock, total_stock, stock_type, add_by_name, add_by_email, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", (ordbook['book_id'], ordbook['stock'], ordbook['qty'], stock, stock_type, session['admin_name'], session['admin_email'], add_date, add_time))
 
             cursor.execute("""INSERT INTO off_orders (order_id, bill_name, bill_email, bill_mobile, bill_address, bill_state, bill_district, bill_pincode, off_name, off_email, off_mobile, off_address, off_state, off_district, off_pincode, price, dis_price, shipping_charges, total_price, txn_status, add_by_name, add_by_email, add_date, add_time) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""", (order_id, bill_name, bill_email, bill_mobile, bill_address, bill_state, bill_district, bill_pincode, off_name, off_email, off_mobile, off_address, off_state, off_district, off_pincode, total_price, dis_price, shipping_charges, new_total_price, txn_status, session['admin_name'], session['admin_email'], add_date, add_time))
@@ -1302,4 +1316,4 @@ def page_not_found(e):
 # page not found end
 
 if __name__ == '__main__':
-    app.run(debug=True, port=2000)
+    app.run(debug=True, port=5000)
