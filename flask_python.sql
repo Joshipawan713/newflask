@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Feb 03, 2025 at 12:10 PM
+-- Generation Time: Feb 04, 2025 at 12:13 PM
 -- Server version: 10.5.22-MariaDB
 -- PHP Version: 8.0.30
 
@@ -19446,8 +19446,11 @@ CREATE TABLE `invoice` (
   `id` int(11) NOT NULL,
   `invoice_no` varchar(55) NOT NULL,
   `order_id` varchar(55) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `user_email` varchar(200) NOT NULL,
   `name` varchar(100) NOT NULL,
   `email` varchar(150) NOT NULL,
+  `mobile` varchar(15) NOT NULL,
   `address` varchar(300) NOT NULL,
   `state` varchar(150) NOT NULL,
   `district` varchar(150) NOT NULL,
@@ -19455,10 +19458,18 @@ CREATE TABLE `invoice` (
   `price` varchar(30) NOT NULL,
   `dis_price` varchar(30) NOT NULL,
   `shipping_charges` varchar(30) NOT NULL,
+  `handling_charges` varchar(15) NOT NULL,
   `total_price` varchar(30) NOT NULL,
   `add_date` varchar(30) NOT NULL,
   `add_time` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `invoice`
+--
+
+INSERT INTO `invoice` (`id`, `invoice_no`, `order_id`, `user_id`, `user_email`, `name`, `email`, `mobile`, `address`, `state`, `district`, `pincode`, `price`, `dis_price`, `shipping_charges`, `handling_charges`, `total_price`, `add_date`, `add_time`) VALUES
+(1, 'IN-ON-2025-1', 'OR-ON-2025-1', 1, 'test@gmail.com', 'Frank Harris', 'your.email+fakedata80091@gmail.com', '9898898989', '1739 Braun Junctions', 'Maine', '2883 Sigurd Shoals', '889656', '18200', '0', '150', '240', '18590', '2025-02-04', '05:33:06 PM');
 
 -- --------------------------------------------------------
 
@@ -19572,20 +19583,31 @@ INSERT INTO `off_order_details` (`id`, `order_id`, `book_id`, `email`, `qty`, `a
 CREATE TABLE `orders` (
   `id` int(11) NOT NULL,
   `order_id` varchar(55) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `user_email` varchar(200) NOT NULL,
   `name` varchar(100) NOT NULL,
   `email` varchar(150) NOT NULL,
+  `mobile` varchar(15) NOT NULL,
+  `address` varchar(300) NOT NULL,
   `state` varchar(150) NOT NULL,
   `district` varchar(150) NOT NULL,
   `pincode` varchar(10) NOT NULL,
-  `address` varchar(300) NOT NULL,
-  `price` varchar(30) NOT NULL,
-  `dis_price` varchar(30) NOT NULL,
-  `shipping_charges` varchar(30) NOT NULL,
-  `total_price` varchar(30) NOT NULL,
-  `txn_status` int(11) NOT NULL COMMENT '1-SUCCESS,0-FAILED	',
+  `price` varchar(30) NOT NULL DEFAULT '0',
+  `dis_price` varchar(30) NOT NULL DEFAULT '0',
+  `shipping_charges` varchar(30) NOT NULL DEFAULT '0',
+  `handling_charges` varchar(15) NOT NULL DEFAULT '0',
+  `total_price` varchar(30) NOT NULL DEFAULT '0',
+  `txn_status` int(11) NOT NULL DEFAULT 0 COMMENT '1-SUCCESS,0-FAILED	',
   `add_date` varchar(30) NOT NULL,
   `add_time` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`id`, `order_id`, `user_id`, `user_email`, `name`, `email`, `mobile`, `address`, `state`, `district`, `pincode`, `price`, `dis_price`, `shipping_charges`, `handling_charges`, `total_price`, `txn_status`, `add_date`, `add_time`) VALUES
+(3, 'OR-ON-2025-1', 1, 'test@gmail.com', 'Frank Harris', 'your.email+fakedata80091@gmail.com', '9898898989', '1739 Braun Junctions', 'Maine', '2883 Sigurd Shoals', '889656', '18200', '0', '150', '240', '18590', 1, '2025-02-04', '05:33:06 PM');
 
 -- --------------------------------------------------------
 
@@ -19597,11 +19619,21 @@ CREATE TABLE `order_details` (
   `id` int(11) NOT NULL,
   `order_id` varchar(55) NOT NULL,
   `book_id` varchar(30) NOT NULL,
+  `user_id` int(11) NOT NULL,
   `email` varchar(150) NOT NULL,
   `qty` varchar(30) NOT NULL,
   `add_date` varchar(30) NOT NULL,
   `add_time` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `order_details`
+--
+
+INSERT INTO `order_details` (`id`, `order_id`, `book_id`, `user_id`, `email`, `qty`, `add_date`, `add_time`) VALUES
+(7, 'OR-ON-2025-1', '3', 1, 'test@gmail.com', '2', '2025-02-04', '05:33:06 PM'),
+(8, 'OR-ON-2025-1', '6', 1, 'test@gmail.com', '2', '2025-02-04', '05:33:06 PM'),
+(9, 'OR-ON-2025-1', '4', 1, 'test@gmail.com', '2', '2025-02-04', '05:33:06 PM');
 
 -- --------------------------------------------------------
 
@@ -19645,14 +19677,6 @@ CREATE TABLE `user_cart` (
   `add_date` varchar(30) NOT NULL,
   `add_time` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `user_cart`
---
-
-INSERT INTO `user_cart` (`id`, `user_id`, `email`, `book_id`, `qty`, `cart_type`, `add_date`, `add_time`) VALUES
-(7, 1, 'test@gmail.com', '3', '3', 'Cart', '2025-02-03', '05:02:18 PM'),
-(8, 1, 'test@gmail.com', '6', '2', 'Cart', '2025-02-03', '05:02:21 PM');
 
 --
 -- Indexes for dumped tables
@@ -19786,7 +19810,7 @@ ALTER TABLE `inventory`
 -- AUTO_INCREMENT for table `invoice`
 --
 ALTER TABLE `invoice`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `off_invoice`
@@ -19810,13 +19834,13 @@ ALTER TABLE `off_order_details`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `order_details`
 --
 ALTER TABLE `order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -19828,7 +19852,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `user_cart`
 --
 ALTER TABLE `user_cart`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
