@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1-1.el9
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Feb 04, 2025 at 12:13 PM
--- Server version: 10.5.22-MariaDB
--- PHP Version: 8.0.30
+-- Host: 127.0.0.1
+-- Generation Time: Feb 04, 2025 at 04:19 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -109,12 +109,12 @@ CREATE TABLE `books` (
 --
 
 INSERT INTO `books` (`id`, `coverpage`, `title`, `editor`, `publisher_year`, `subject`, `isbn`, `pages`, `stock`, `language`, `actual_price`, `discounted_price`, `descr`, `add_date`, `add_time`) VALUES
-(1, '2025-01-22_asus.jpg', 'Dynamic Creative Orchestrator', 'Sint id odit.', 8787, 'Hindi', 'Sunt dolore occaecati et magni', 1210, 106, 'Windler', 100, 100, 'Autem inventore iure commodi.', '2025-01-22', '08:59:44 PM'),
-(2, '5_asus.jpg', 'National Accounts Engineer', 'Placeat architecto est ratione.', 4545, 'Hindi', 'Soluta aliquid odit.', 74858, 62, 'Hauck', 2000, 1000, 'Molestias blanditiis cupiditate.', '2025-01-22', '09:03:44 PM'),
-(3, 'CIIL7.png', 'Forward Optimization Assistant', 'Nisi fuga', 2024, 'Hindi', '85-85-85-85', 150, 50, 'Rosenbaum', 5000, 4500, 'Amet iusto iste esse ipsam.', '2025-01-31', '11:07:43 AM'),
-(4, '2025-01-22_asus.jpg', 'Dynamic Creative Orchestrator', 'Sint id odit.', 8787, 'Hindi', 'Sunt dolore occaecati et magni', 1210, 106, 'Windler', 100, 100, 'Autem inventore iure commodi.', '2025-01-22', '08:59:44 PM'),
-(5, '5_asus.jpg', 'National Accounts Engineer', 'Placeat architecto est ratione.', 4545, 'Hindi', 'Soluta aliquid odit.', 74858, 62, 'Hauck', 2000, 1000, 'Molestias blanditiis cupiditate.', '2025-01-22', '09:03:44 PM'),
-(6, 'CIIL7.png', 'Forward Optimization Assistant', 'Nisi fuga', 2024, 'Hindi', '85-85-85-85', 150, 50, 'Rosenbaum', 5000, 4500, 'Amet iusto iste esse ipsam.', '2025-01-31', '11:07:43 AM');
+(1, '2025-01-22_asus.jpg', 'Dynamic Creative Orchestrator', 'Sint id odit.', 8787, 'Hindi', 'Sunt dolore occaecati et magni', 1210, 101, 'Windler', 100, 100, 'Autem inventore iure commodi.', '2025-01-22', '08:59:44 PM'),
+(2, '5_asus.jpg', 'National Accounts Engineer', 'Placeat architecto est ratione.', 4545, 'Hindi', 'Soluta aliquid odit.', 74858, 51, 'Hauck', 2000, 1000, 'Molestias blanditiis cupiditate.', '2025-01-22', '09:03:44 PM'),
+(3, 'CIIL7.png', 'Forward Optimization Assistant', 'Nisi fuga', 2024, 'Hindi', '85-85-85-85', 150, 47, 'Rosenbaum', 5000, 4500, 'Amet iusto iste esse ipsam.', '2025-01-31', '11:07:43 AM'),
+(4, '2025-01-22_asus.jpg', 'Dynamic Creative Orchestrator', 'Sint id odit.', 8787, 'Hindi', 'Sunt dolore occaecati et magni', 1210, 102, 'Windler', 100, 100, 'Autem inventore iure commodi.', '2025-01-22', '08:59:44 PM'),
+(5, '5_asus.jpg', 'National Accounts Engineer', 'Placeat architecto est ratione.', 4545, 'Hindi', 'Soluta aliquid odit.', 74858, 46, 'Hauck', 2000, 1000, 'Molestias blanditiis cupiditate.', '2025-01-22', '09:03:44 PM'),
+(6, 'CIIL7.png', 'Forward Optimization Assistant', 'Nisi fuga', 2024, 'Hindi', '85-85-85-85', 150, 37, 'Rosenbaum', 5000, 4500, 'Amet iusto iste esse ipsam.', '2025-01-31', '11:07:43 AM');
 
 -- --------------------------------------------------------
 
@@ -19434,7 +19434,17 @@ INSERT INTO `inventory` (`id`, `book_id`, `old_stock`, `in_out_stock`, `total_st
 (5, '5', '0', '25', '25', 'Inward', 'Admin12', 'admin@gmail.com', '2025-01-31', '03:59:25 PM'),
 (6, '4', '81', '25', '106', 'Inward', 'Admin12', 'admin@gmail.com', '2025-01-31', '04:05:53 PM'),
 (7, '5', '25', '37', '62', 'Inward', 'Admin12', 'admin@gmail.com', '2025-01-31', '04:05:53 PM'),
-(8, '7', '0', '50', '50', 'Inward', 'Admin12', 'admin@gmail.com', '2025-01-31', '04:05:53 PM');
+(8, '7', '0', '50', '50', 'Inward', 'Admin12', 'admin@gmail.com', '2025-01-31', '04:05:53 PM'),
+(9, '7', '50', '50', '100', 'Inward', 'Admin12', 'admin@gmail.com', '2025-01-31', '04:05:53 PM'),
+(10, '2', '62', '9', '53', 'Online_Sell', 'Alayna_Romaguera12', 'test@gmail.com', '2025-02-04', '08:37:40 PM'),
+(11, '5', '62', '14', '48', 'Online_Sell', 'Alayna_Romaguera12', 'test@gmail.com', '2025-02-04', '08:37:40 PM'),
+(12, '6', '50', '9', '41', 'Online_Sell', 'Alayna_Romaguera12', 'test@gmail.com', '2025-02-04', '08:37:40 PM'),
+(13, '3', '50', '3', '47', 'Offline_Sell', 'Admin', 'admin@gmail.com', '2025-02-04', '08:46:13 PM'),
+(14, '4', '106', '4', '102', 'Offline_Sell', 'Admin', 'admin@gmail.com', '2025-02-04', '08:46:13 PM'),
+(15, '5', '48', '2', '46', 'Offline_Sell', 'Admin', 'admin@gmail.com', '2025-02-04', '08:46:13 PM'),
+(16, '2', '53', '2', '51', 'Offline_Sell', 'Admin', 'admin@gmail.com', '2025-02-04', '08:46:13 PM'),
+(17, '1', '106', '5', '101', 'Offline_Sell', 'Admin', 'admin@gmail.com', '2025-02-04', '08:46:13 PM'),
+(18, '6', '41', '4', '37', 'Offline_Sell', 'Admin', 'admin@gmail.com', '2025-02-04', '08:46:13 PM');
 
 -- --------------------------------------------------------
 
@@ -19469,7 +19479,8 @@ CREATE TABLE `invoice` (
 --
 
 INSERT INTO `invoice` (`id`, `invoice_no`, `order_id`, `user_id`, `user_email`, `name`, `email`, `mobile`, `address`, `state`, `district`, `pincode`, `price`, `dis_price`, `shipping_charges`, `handling_charges`, `total_price`, `add_date`, `add_time`) VALUES
-(1, 'IN-ON-2025-1', 'OR-ON-2025-1', 1, 'test@gmail.com', 'Frank Harris', 'your.email+fakedata80091@gmail.com', '9898898989', '1739 Braun Junctions', 'Maine', '2883 Sigurd Shoals', '889656', '18200', '0', '150', '240', '18590', '2025-02-04', '05:33:06 PM');
+(1, 'IN-ON-2025-1', 'OR-ON-2025-1', 1, 'test@gmail.com', 'Frank Harris', 'your.email+fakedata80091@gmail.com', '9898898989', '1739 Braun Junctions', 'Maine', '2883 Sigurd Shoals', '889656', '18200', '0', '150', '240', '18590', '2025-02-04', '05:33:06 PM'),
+(5, 'IN-ON-2025-1', 'OR-ON-2025-1', 1, 'test@gmail.com', 'Eveline Von', 'your.email+fakedata90870@gmail.com', '9888989898', '862 Charlie Unions', 'North Carolina', '6138 Randall Port', '978988', '63500', '0', '150', '1280', '64930', '2025-02-04', '08:37:40 PM');
 
 -- --------------------------------------------------------
 
@@ -19504,7 +19515,8 @@ CREATE TABLE `off_invoice` (
 
 INSERT INTO `off_invoice` (`id`, `invoice_no`, `order_id`, `name`, `email`, `mobile`, `address`, `state`, `district`, `pincode`, `price`, `dis_price`, `shipping_charges`, `total_price`, `add_by_name`, `add_by_email`, `add_date`, `add_time`) VALUES
 (1, 'IN-2025-1', 'OR-2025-1', 'Keven_Morar51', 'your.email+fakedata62932@gmail.com', '8982997798', '45787 Luettgen Rapids', 'Texas', '34315 Bogan Ridges', '070582', '20300', '2000', '5000', '20300', 'admin@gmail.com', '2025-02-01', 'Admin', '03:54:09 PM'),
-(2, 'IN-2025-2', 'OR-2025-2', 'Blaze44', 'your.email+fakedata30159@gmail.com', '9892898989', '71581 Anabelle Rapids', 'Kentucky', '473 Serenity Hollow', '815912', '13500', '1500', '5000', '13500', 'admin@gmail.com', '2025-02-01', 'Admin', '04:02:18 PM');
+(2, 'IN-2025-2', 'OR-2025-2', 'Blaze44', 'your.email+fakedata30159@gmail.com', '9892898989', '71581 Anabelle Rapids', 'Kentucky', '473 Serenity Hollow', '815912', '13500', '1500', '5000', '13500', 'admin@gmail.com', '2025-02-01', 'Admin', '04:02:18 PM'),
+(3, 'IN-2025-3', 'OR-2025-3', 'Dayana_Ernser88', 'your.email+fakedata47312@gmail.com', '7979789979', '8443 Fahey Trafficway', 'Virginia', '7060 Antonietta Passage', '542901', '36400', '1000', '5000', '36400', 'Admin', 'admin@gmail.com', '2025-02-04', '08:46:13 PM');
 
 -- --------------------------------------------------------
 
@@ -19546,7 +19558,8 @@ CREATE TABLE `off_orders` (
 
 INSERT INTO `off_orders` (`id`, `order_id`, `bill_name`, `bill_email`, `bill_mobile`, `bill_address`, `bill_state`, `bill_district`, `bill_pincode`, `off_name`, `off_email`, `off_mobile`, `off_address`, `off_state`, `off_district`, `off_pincode`, `price`, `dis_price`, `shipping_charges`, `total_price`, `txn_status`, `add_by_name`, `add_by_email`, `add_date`, `add_time`) VALUES
 (1, 'OR-2025-1', 'Keven_Morar51', 'your.email+fakedata62932@gmail.com', '8982997798', '45787 Luettgen Rapids', 'Texas', '34315 Bogan Ridges', '070582', 'Mylene_Goodwin', 'your.email+fakedata16704@gmail.com', '8982997798', '850 Grant Lakes', 'Mississippi', '6651 Danielle Mill', '769945', '20300', '2000', '5000', '23300', 1, 'Admin', 'admin@gmail.com', '2025-02-01', '03:54:09 PM'),
-(2, 'OR-2025-2', 'Blaze44', 'your.email+fakedata30159@gmail.com', '9892898989', '71581 Anabelle Rapids', 'Kentucky', '473 Serenity Hollow', '815912', 'Flavio.Kozey57', 'your.email+fakedata21218@gmail.com', '9892898989', '877 Weston Ridge', 'Iowa', '85761 Haag Centers', '904481', '13500', '1500', '5000', '17000', 1, 'Admin', 'admin@gmail.com', '2025-02-01', '04:02:18 PM');
+(2, 'OR-2025-2', 'Blaze44', 'your.email+fakedata30159@gmail.com', '9892898989', '71581 Anabelle Rapids', 'Kentucky', '473 Serenity Hollow', '815912', 'Flavio.Kozey57', 'your.email+fakedata21218@gmail.com', '9892898989', '877 Weston Ridge', 'Iowa', '85761 Haag Centers', '904481', '13500', '1500', '5000', '17000', 1, 'Admin', 'admin@gmail.com', '2025-02-01', '04:02:18 PM'),
+(3, 'OR-2025-3', 'Dayana_Ernser88', 'your.email+fakedata47312@gmail.com', '7979789979', '8443 Fahey Trafficway', 'Virginia', '7060 Antonietta Passage', '542901', 'Velva_Grimes', 'your.email+fakedata14004@gmail.com', '7979789979', '84555 Mckenzie Villages', 'Alabama', '7306 Nathaniel Vista', '160781', '36400', '1000', '5000', '40400', 1, 'Admin', 'admin@gmail.com', '2025-02-04', '08:46:13 PM');
 
 -- --------------------------------------------------------
 
@@ -19572,7 +19585,13 @@ INSERT INTO `off_order_details` (`id`, `order_id`, `book_id`, `email`, `qty`, `a
 (1, 'OR-2025-1', '4', 'admin@gmail.com', '3', '2025-02-01', '03:54:09 PM'),
 (2, 'OR-2025-1', '5', 'admin@gmail.com', '2', '2025-02-01', '03:54:09 PM'),
 (3, 'OR-2025-1', '7', 'admin@gmail.com', '4', '2025-02-01', '03:54:09 PM'),
-(4, 'OR-2025-2', '7', 'admin@gmail.com', '3', '2025-02-01', '04:02:18 PM');
+(4, 'OR-2025-2', '7', 'admin@gmail.com', '3', '2025-02-01', '04:02:18 PM'),
+(5, 'OR-2025-3', '3', 'admin@gmail.com', '3', '2025-02-04', '08:46:13 PM'),
+(6, 'OR-2025-3', '4', 'admin@gmail.com', '4', '2025-02-04', '08:46:13 PM'),
+(7, 'OR-2025-3', '5', 'admin@gmail.com', '2', '2025-02-04', '08:46:13 PM'),
+(8, 'OR-2025-3', '2', 'admin@gmail.com', '2', '2025-02-04', '08:46:13 PM'),
+(9, 'OR-2025-3', '1', 'admin@gmail.com', '5', '2025-02-04', '08:46:13 PM'),
+(10, 'OR-2025-3', '6', 'admin@gmail.com', '4', '2025-02-04', '08:46:13 PM');
 
 -- --------------------------------------------------------
 
@@ -19607,7 +19626,8 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`id`, `order_id`, `user_id`, `user_email`, `name`, `email`, `mobile`, `address`, `state`, `district`, `pincode`, `price`, `dis_price`, `shipping_charges`, `handling_charges`, `total_price`, `txn_status`, `add_date`, `add_time`) VALUES
-(3, 'OR-ON-2025-1', 1, 'test@gmail.com', 'Frank Harris', 'your.email+fakedata80091@gmail.com', '9898898989', '1739 Braun Junctions', 'Maine', '2883 Sigurd Shoals', '889656', '18200', '0', '150', '240', '18590', 1, '2025-02-04', '05:33:06 PM');
+(3, 'OR-ON-2025-1', 1, 'test@gmail.com', 'Frank Harris', 'your.email+fakedata80091@gmail.com', '9898898989', '1739 Braun Junctions', 'Maine', '2883 Sigurd Shoals', '889656', '18200', '0', '150', '240', '18590', 1, '2025-02-04', '05:33:06 PM'),
+(7, 'OR-ON-2025-1', 1, 'test@gmail.com', 'Eveline Von', 'your.email+fakedata90870@gmail.com', '9888989898', '862 Charlie Unions', 'North Carolina', '6138 Randall Port', '978988', '63500', '0', '150', '1280', '64930', 1, '2025-02-04', '08:37:40 PM');
 
 -- --------------------------------------------------------
 
@@ -19633,7 +19653,10 @@ CREATE TABLE `order_details` (
 INSERT INTO `order_details` (`id`, `order_id`, `book_id`, `user_id`, `email`, `qty`, `add_date`, `add_time`) VALUES
 (7, 'OR-ON-2025-1', '3', 1, 'test@gmail.com', '2', '2025-02-04', '05:33:06 PM'),
 (8, 'OR-ON-2025-1', '6', 1, 'test@gmail.com', '2', '2025-02-04', '05:33:06 PM'),
-(9, 'OR-ON-2025-1', '4', 1, 'test@gmail.com', '2', '2025-02-04', '05:33:06 PM');
+(9, 'OR-ON-2025-1', '4', 1, 'test@gmail.com', '2', '2025-02-04', '05:33:06 PM'),
+(18, 'OR-ON-2025-1', '2', 1, 'test@gmail.com', '9', '2025-02-04', '08:37:40 PM'),
+(19, 'OR-ON-2025-1', '5', 1, 'test@gmail.com', '14', '2025-02-04', '08:37:40 PM'),
+(20, 'OR-ON-2025-1', '6', 1, 'test@gmail.com', '9', '2025-02-04', '08:37:40 PM');
 
 -- --------------------------------------------------------
 
@@ -19786,7 +19809,7 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `admin_cart`
 --
 ALTER TABLE `admin_cart`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `books`
@@ -19804,43 +19827,43 @@ ALTER TABLE `country`
 -- AUTO_INCREMENT for table `inventory`
 --
 ALTER TABLE `inventory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `invoice`
 --
 ALTER TABLE `invoice`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `off_invoice`
 --
 ALTER TABLE `off_invoice`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `off_orders`
 --
 ALTER TABLE `off_orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `off_order_details`
 --
 ALTER TABLE `off_order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `order_details`
 --
 ALTER TABLE `order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -19852,7 +19875,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `user_cart`
 --
 ALTER TABLE `user_cart`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
