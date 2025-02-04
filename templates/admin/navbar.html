@@ -39,9 +39,9 @@
             Orders
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="{{ url_for('adminOfflineOrders') }}">Online Orders</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('adminOfflineOrders') }}">Offline Orders</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="javascript:void(0)">Offline Users</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('adminOnlineOrders') }}">Online Users</a></li>
           </ul>
         </li>
         <li class="nav-item dropdown">
@@ -49,9 +49,9 @@
             Invoice
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="{{ url_for('adminOfflineInvoice') }}">Online Invoice</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('adminOfflineInvoice') }}">Offline Invoice</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="javascript:void(0)">Offline Invoice</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('adminOnlineInvoice') }}">Online Invoice</a></li>
           </ul>
         </li>
         <li class="nav-item dropdown">

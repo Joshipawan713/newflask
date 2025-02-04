@@ -1,0 +1,61 @@
+{% extends "admin/base.html" %}
+
+{% block admintitle %} Online Orders - Admin {% endblock %}
+
+{% block admincontent %}
+
+<div class="container-fluid">
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header">Online Orders</div>
+                <div class="card-body p-0">
+                    <table class="table table-bordered table-striped align-middle text-center mb-0">
+                        <thead>
+                            <tr>
+                                <th>Order_Id</th>
+                                <th>Name</th>
+                                <th>E-mail</th>
+                                <th>Mobile</th>
+                                <th>Address</th>
+                                <th>Price</th>
+                                <th>Discount_Price</th>
+                                <th>Shipping_Charges</th>
+                                <th>Handling_Charges</th>
+                                <th>Total_Price</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if data %}
+                                {% for orddata in data %}
+                                    <tr>
+                                        <td>{{ orddata.order_id }}</td>
+                                        <td>{{ orddata.name }}</td>
+                                        <td>{{ orddata.email }}</td>
+                                        <td>{{ orddata.mobile }}</td>
+                                        <td>{{ orddata.address }}</td>
+                                        <td>{{ orddata.price }}</td>
+                                        <td>{{ orddata.dis_price }}</td>
+                                        <td>{{ orddata.shipping_charges }}</td>
+                                        <td>{{ orddata.handling_charges }}</td>
+                                        <td>{{ orddata.total_price }}</td>
+                                        <td>{{ orddata.add_date }}</td>
+                                        <td>{{ orddata.add_time }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                    <tr>
+                                        <td colspan="11">No Data Found</td>
+                                    </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
