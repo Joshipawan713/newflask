@@ -20,7 +20,7 @@ def get_db_connection():
         conn = mysql.connector.connect(
             host='localhost',
             user='root',
-            password='',
+            password='Sdk@1259',
             database='flask_python'
         )
         if conn.is_connected():
@@ -219,7 +219,121 @@ def userCart():
 @app.route('/checkout', methods=['GET', 'POST'])
 def userCheckout():
     if 'user_logged_in' in session and 'user_id' in session and 'email' in session:
-        return render_template('checkout.html')
+        add_date, add_time = get_current_date_time()
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("SELECT books.id, books.coverpage, books.title, books.subject, books.publisher_year, books.discounted_price, user_cart.user_id, user_cart.email, user_cart.book_id, user_cart.qty FROM user_cart JOIN books ON books.id = user_cart.book_id WHERE user_cart.user_id = %s and user_cart.email = %s", (session['user_id'], session['email']))
+        data = cursor.fetchall()
+
+        if not data:
+            return redirect(url_for('userCart'))
+
+        # first method
+        total_price = 0
+        total_quantity = 0
+        for item in data:
+            total_price += int(item['qty']) * int(item['discounted_price'])
+            total_quantity += int(item['qty'])
+
+        # # second method
+        # total_price = sum(int(item['qty']) * int(item['discounted_price']) for item in data)
+        # total_quantity = sum(int(item['qty']) for item in data)
+
+        dis_price = 0
+        handling_charges = 40 * total_quantity
+        shipping_charges = 150
+
+        new_total_price = total_price + shipping_charges + handling_charges
+
+        if request.method == 'POST':
+            name = request.form.get('name')
+            email = request.form.get('email')
+            mobile = request.form.get('mobile')
+            address = request.form.get('address')
+            state = request.form.get('state')
+            district = request.form.get('district')
+            pincode = request.form.get('pincode')
+            txn_status=1
+
+            if not all([name, email, mobile, address, state, district, pincode]):
+                flash('All Fields are required', 'danger')
+                return redirect(url_for('userCheckout'))
+
+            email_regex = r"(^\w|[a-zA-Z0-9._%+-]+)@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+            if not re.match(email_regex, email):
+                flash('Invalid email format!', 'danger')
+                return redirect(url_for('userCheckout'))
+            
+            mobile_regex = r"^\d{10}$"
+            if not re.match(mobile_regex, mobile):
+                flash('Invalid mobile number format! Must be 10 digits.', 'danger')
+                return redirect(url_for('userCheckout'))
+
+            pincode_regex = r"^\d{6}$"
+            if not re.match(pincode_regex, pincode):
+                flash('Invalid pincode format! Must be 6 digits.', 'danger')
+                return redirect(url_for('userCheckout'))
+            
+            current_year = datetime.now().year
+
+            cursor.execute("SELECT order_id FROM orders WHERE order_id LIKE %s ORDER BY order_id DESC LIMIT 1", (f"OR-{current_year}-%",))
+            last_order = cursor.fetchone()
+            
+            if last_order is None:
+                order_number = 1
+            else:
+                last_order_id = last_order['order_id']
+                order_number = int(last_order_id.split('-')[2]) + 1
+
+            order_id = f"OR-ON-{current_year}-{order_number}"
+
+            cursor.execute("SELECT invoice_no FROM invoice WHERE invoice_no LIKE %s ORDER BY invoice_no DESC LIMIT 1", (f"IN-{current_year}-%",))
+            last_invoice = cursor.fetchone()
+
+            if last_invoice is None:
+                invoice_number = 1
+            else:
+                last_invoice_no = last_invoice['invoice_no']
+                invoice_number = int(last_invoice_no.split('-')[2]) + 1
+
+            invoice_no = f"IN-ON-{current_year}-{invoice_number}"
+
+            for orddet in data:
+                cursor.execute("INSERT INTO order_details (order_id, book_id, user_id, email, qty, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s)", (order_id, orddet['book_id'], session['user_id'], session['email'], orddet['qty'], add_date, add_time))
+
+            cursor.execute("INSERT INTO orders (order_id, user_id, user_email, name, email, mobile, address, state, district, pincode, price, dis_price, shipping_charges, handling_charges, total_price, txn_status, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (order_id, session['user_id'], session['email'], name, email, mobile, address, state, district, pincode, total_price, dis_price, shipping_charges, handling_charges, new_total_price, txn_status, add_date, add_time))
+
+            cursor.execute("INSERT INTO invoice (invoice_no, order_id, user_id, user_email, name, email, mobile, address, state, district, pincode, price, dis_price, shipping_charges, handling_charges, total_price, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (invoice_no, order_id, session['user_id'], session['email'], name, email, mobile, address, state, district, pincode, total_price, dis_price, shipping_charges, handling_charges, new_total_price, add_date, add_time))
+
+            cursor.execute("DELETE FROM user_cart WHERE user_id = %s and email = %s", (session['user_id'], session['email']))
+            
+            conn.commit()
+
+            return redirect(url_for('paymentsuccess'))
+
+        cursor.close()
+        conn.close()
+        
+        # # first method
+        # return render_template('checkout.html', handling_charges=handling_charges, shipping_charges=shipping_charges, total_price=total_price, new_total_price=new_total_price)
+        
+        # second method
+        context = {
+            'handling_charges': handling_charges, 
+            'shipping_charges': shipping_charges, 
+            'total_price': total_price, 
+            'new_total_price':new_total_price
+        }
+
+        return render_template('checkout.html', **context)
+    else:
+        return redirect(url_for('login'))
+    
+@app.route('/success')
+def paymentsuccess():
+    if 'user_logged_in' in session and 'user_id' in session and 'email' in session:
+        return render_template('success.html')
     else:
         return redirect(url_for('login'))
 
@@ -1155,6 +1269,28 @@ def adminOfflineInvoice():
         return render_template('admin/offlineinvoice.html', data=data)
     else:
         return redirect(url_for('adminLogin'))
+    
+@app.route('/admin/onlineorders')
+def adminOnlineOrders():
+    if 'admin_logged_in' in session:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM orders WHERE txn_status = 1")
+        data = cursor.fetchall()
+        return render_template('admin/onlineorders.html', data=data)
+    else:
+        return redirect(url_for('adminLogin'))
+
+@app.route('/admin/onlineinvoice')
+def adminOnlineInvoice():
+    if 'admin_logged_in' in session:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM invoice")
+        data = cursor.fetchall()
+        return render_template('admin/onlineinvoice.html', data=data)
+    else:
+        return redirect(url_for('adminLogin'))
 
 # admin end
 
@@ -1165,6 +1301,5 @@ def page_not_found(e):
 
 # page not found end
 
-
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=2000)
