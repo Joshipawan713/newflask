@@ -10,14 +10,11 @@
           <a class="nav-link {% if request.path == '/' %} active {% endif %}" href="{{ url_for('index') }}">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('bookstore') }}">Bookstore</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Language</a>
+          <a class="nav-link {% if request.path == '/bookstore' %} active {% endif %}" href="{{ url_for('bookstore') }}">Bookstore</a>
         </li>
         {% if session.get('user_logged_in') %}
           <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('userProfile') }}">Profile</a>
+            <a class="nav-link {% if request.path == '/profile' %} active {% endif %}" href="{{ url_for('userProfile') }}">Profile</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
