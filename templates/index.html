@@ -77,6 +77,39 @@
             </div>
             {% endfor %}
         </div>
+
+        <div class="row mt-4 mb-4">
+            <div class="col-lg-12 mt-2 mb-2">
+                <h2>Best Review books</h2>
+            </div>
+            {% for book in data %}
+            <div class="col-xl-2 col-lg-4 col-md-6 mt-2 mb-2">
+                <div class="card h-100">
+                    <img src="{{ url_for('static', filename='coverimage/' + book.coverpage) }}" alt="{{ book.title }}" class="card-img-top" style="height: 300px;">
+                    <div class="card-body">
+                        <p class="card-text">{{ book.title }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-between">
+                            <div style="border: 2px solid #0b2558; border-radius: 5px; margin: 5px;">
+                                <a href="javascript:void(0)" style="padding: 2px 7px; font-size: 13px;" class="text-decoration-none text-dark">₹ {{ book.actual_price }}</a>
+                            </div>
+                            {% if book.stock == 0 %}
+                                <div style="border-radius: 5px; margin: 5px;" class="bg-danger text-white">
+                                    <a href="javascript:void(0)" style="padding: 2px 7px; font-size: 13px;" class="text-decoration-none text-white">Out Of Stock</a>
+                                </div>
+                            {% else %}
+                                <div style="border-radius: 5px; margin: 5px;" class="bg-success text-white">
+                                    <a href="{{ url_for('bookDetails', book_id=book.id) }}" style="padding: 2px 7px; font-size: 13px;" class="text-decoration-none text-white">Details</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
     </div>
 
 {% endblock %}
