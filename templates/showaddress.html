@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %} Show Address {% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-12">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="alert-container">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                <strong>{{ category|capitalize }}:</strong> {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        {% include "sidebar.html" %}
+
+        <div class="col-lg-9">
+            <div class="card shadow mb-4">
+                <div class="card-header d-flex justify-content-between">
+                    <div>Address</div>
+                    <div><a href="{{ url_for('userAddress') }}" class="text-dark text-decoration-none">Add Address</a></div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if data %}
+                            {% for user in data %}
+                                <div class="col-lg-6 mt-2 mb-2">
+                                    <div class="card">
+                                        <div class="card-header d-flex justify-content-between">
+                                            <div>{{ user.add_type }}</div>
+                                            <div>
+                                                <a href="{{ url_for('userEditAddress', add_id=user.id) }}"><i class="fa fa-edit text-primary"></i></a>
+                                                <a href="javascript:void(0)" onclick="deleteAddress({{ user.id }})"><i class="fa fa-trash text-danger"></i></a>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            Name : {{ user.name }}
+                                            <br>
+                                            Mobile : {{ user.mobile }}
+                                            <br>
+                                            Email : {{ user.email }}
+                                            <br>
+                                            Address : {{ user.address }}
+                                            <br>
+                                            State : {{ user.state }}
+                                            <br>
+                                            District : {{ user.district }}
+                                            <br>
+                                            Pincode : {{ user.pincode }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="col-lg-12">
+                                <div class="alert alert-danger text-center" role="alert">
+                                    No Data Found
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

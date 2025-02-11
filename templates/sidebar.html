@@ -3,7 +3,7 @@
         <div class="card-body p-0">
             <div class="list-group">
                 <a href="{{ url_for('userProfile') }}" class="list-group-item list-group-item-action {% if request.path == url_for('userProfile') %} active {% endif %}">Profile</a>
-                <a href="{{ url_for('userAddress') }}" class="list-group-item list-group-item-action {% if request.path == url_for('userAddress') %} active {% endif %}">Address</a>
+                <a href="{{ url_for('userShowAddress') }}" class="list-group-item list-group-item-action {% if request.path == url_for('userShowAddress') %} active {% endif %}">Address</a>
                 <a href="{{ url_for('userChangePassword') }}" class="list-group-item list-group-item-action {% if request.path == url_for('userChangePassword') %} active {% endif %}">Change Password</a>
                 <a href="#" class="list-group-item list-group-item-action">Support Ticket</a>
                 <a href="#" class="list-group-item list-group-item-action">Download Invoice</a>
