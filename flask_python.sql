@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 04, 2025 at 04:19 PM
+-- Generation Time: Feb 09, 2025 at 11:29 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -29,15 +29,29 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `address` (
   `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `user_email` varchar(200) NOT NULL,
   `name` varchar(100) NOT NULL,
+  `mobile` varchar(15) NOT NULL,
   `email` varchar(150) NOT NULL,
   `address` varchar(300) NOT NULL,
   `state` varchar(150) NOT NULL,
   `district` varchar(150) NOT NULL,
   `pincode` varchar(10) NOT NULL,
-  `add_date` int(11) NOT NULL,
-  `add_time` int(11) NOT NULL
+  `add_type` enum('Home','Office') NOT NULL DEFAULT 'Home',
+  `add_date` varchar(20) NOT NULL,
+  `add_time` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `address`
+--
+
+INSERT INTO `address` (`id`, `user_id`, `user_email`, `name`, `mobile`, `email`, `address`, `state`, `district`, `pincode`, `add_type`, `add_date`, `add_time`) VALUES
+(2, 1, 'test@gmail.com', 'Scot80', '9454548444', 'your.email+fakedata72074@gmail.com', '25263 Carter Fields', 'Virginia', '611 Fisher Port', '516107', 'Home', '2025-02-09', '03:00:20 PM'),
+(3, 1, 'test@gmail.com', 'Amelia93', '8986454545', 'your.email+fakedata17188@gmail.com', '287 Estelle Coves', 'Colorado', '834 Roderick Throughway', '196755', 'Office', '2025-02-09', '03:23:39 PM'),
+(4, 1, 'test@gmail.com', 'Houston.Hickle', '8789898888', 'your.email+fakedata70998@gmail.com', '31102 Emmitt Haven', 'Vermont', '980 Ambrose Ports', '229087', 'Home', '2025-02-09', '03:51:07 PM'),
+(5, 1, 'test@gmail.com', 'Alayna.Kshlerin', '9898965656', 'your.email+fakedata21941@gmail.com', '26974 Nolan Unions', 'Wisconsin', '1758 Anne Ramp', '255365', 'Home', '2025-02-09', '03:51:46 PM');
 
 -- --------------------------------------------------------
 
@@ -19797,7 +19811,7 @@ ALTER TABLE `user_cart`
 -- AUTO_INCREMENT for table `address`
 --
 ALTER TABLE `address`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `admin`

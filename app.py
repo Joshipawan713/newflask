@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, current_app, session, flash
+from flask import Flask, render_template, request, redirect, url_for, current_app, session, flash, jsonify
 import mysql.connector
 from mysql.connector import Error
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -112,6 +112,62 @@ def bookstore():
     
     return render_template('bookstore.html', data=data)
 
+# @app.route('/bookdetails/<int:book_id>', methods=['GET', 'POST'])
+# def bookDetails(book_id):
+#     add_date, add_time = get_current_date_time()
+#     conn = get_db_connection()
+#     cursor = conn.cursor(dictionary=True)
+#     cursor.execute('SELECT * FROM books WHERE id = %s', (book_id,))
+#     data = cursor.fetchone()
+    
+#     covers_folder = os.path.join(current_app.static_folder, 'coverimage')
+
+#     image_filename = data.get('coverpage')
+#     image_path = os.path.join(covers_folder, image_filename)
+#     if not image_filename or image_filename.strip() == "":
+#         data['coverpage'] = 'imagesnotfound.jpg'
+            
+#     if not os.path.exists(image_path):
+#         data['coverpage'] = 'imagesnotfound.jpg'
+
+#     cursor.execute("SELECT * FROM books WHERE (subject = %s OR language = %s) AND id != %s", (data['subject'], data['language'], book_id))
+#     reldata = cursor.fetchall()
+
+#     for bookdata in reldata:
+#         relimage_filename = bookdata.get('coverpage')
+#         relimage_path = os.path.join(covers_folder,relimage_filename)
+
+#         if not relimage_filename or relimage_filename.strip() == "":
+#             bookdata['coverpage'] = 'imagesnotfound.jpg'
+
+#         if not os.path.exists(relimage_path):
+#             bookdata['coverpage'] = 'imagesnotfound.jpg'
+
+#     if request.method == 'POST':
+#         if 'user_logged_in' in session:
+#             cursor.execute("SELECT * FROM user_cart WHERE user_id = %s and email = %s and book_id = %s", (session['user_id'], session['email'], book_id))
+#             check_cart = cursor.fetchone()
+#             # print(check_cart)
+#             if not check_cart:
+#                 qty = 1
+#                 cart_type = 'Cart'
+#                 cursor.execute("INSERT INTO user_cart (user_id, email, book_id, qty, cart_type, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s)", (session['user_id'], session['email'], book_id, qty, cart_type, add_date, add_time))
+#                 conn.commit()
+#             else:
+#                 qty = int(check_cart['qty']) + 1
+#                 cursor.execute("UPDATE user_cart SET qty = %s WHERE user_id = %s and email = %s and book_id = %s", (qty, session['user_id'], session['email'], book_id))
+#                 conn.commit()
+#         else:
+#             return redirect(url_for('login'))
+
+#     cursor.close()
+#     conn.close()
+
+#     return render_template('bookdetails.html', book_id=book_id, data=data, reldata=reldata)
+
+
+
+
 @app.route('/bookdetails/<int:book_id>', methods=['GET', 'POST'])
 def bookDetails(book_id):
     add_date, add_time = get_current_date_time()
@@ -144,19 +200,37 @@ def bookDetails(book_id):
             bookdata['coverpage'] = 'imagesnotfound.jpg'
 
     if request.method == 'POST':
-        if 'user_logged_in' in session:
-            cursor.execute("SELECT * FROM user_cart WHERE user_id = %s and email = %s and book_id = %s", (session['user_id'], session['email'], book_id))
-            check_cart = cursor.fetchone()
-            print(check_cart)
-            if not check_cart:
-                qty = 1
-                cart_type = 'Cart'
-                cursor.execute("INSERT INTO user_cart (user_id, email, book_id, qty, cart_type, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s)", (session['user_id'], session['email'], book_id, qty, cart_type, add_date, add_time))
-                conn.commit()
-            else:
-                qty = int(check_cart['qty']) + 1
-                cursor.execute("UPDATE user_cart SET qty = %s WHERE user_id = %s and email = %s and book_id = %s", (qty, session['user_id'], session['email'], book_id))
-                conn.commit()
+        if 'user_logged_in' in session and 'user_id' in session and 'email' in session:
+            # Get current date and time
+            add_date = datetime.now().date()
+            add_time = datetime.now().time()
+
+            if request.form.get('add_to_cart'):
+                cursor.execute("SELECT * FROM user_cart WHERE user_id = %s and email = %s and book_id = %s and cart_type = %s", (session['user_id'], session['email'], book_id, 1))
+                check_cart = cursor.fetchone()
+                if not check_cart:
+                    qty = 1
+                    cart_type = 1
+                    cursor.execute("INSERT INTO user_cart (user_id, email, book_id, qty, cart_type, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s)", (session['user_id'], session['email'], book_id, qty, cart_type, add_date, add_time))
+                    conn.commit()
+                else:
+                    qty = int(check_cart['qty']) + 1
+                    cursor.execute("UPDATE user_cart SET qty = %s WHERE user_id = %s and email = %s and book_id = %s and cart_type = %s", (qty, session['user_id'], session['email'], book_id, 1))
+                    conn.commit()
+
+            if request.form.get('add_to_wishlist'):
+                cursor.execute("SELECT * FROM user_cart WHERE user_id = %s and email = %s and book_id = %s and cart_type = %s", (session['user_id'], session['email'], book_id, 2))
+                check_cart = cursor.fetchone()
+                if not check_cart:
+                    qty = 1
+                    cart_type = 2
+                    cursor.execute("INSERT INTO user_cart (user_id, email, book_id, qty, cart_type, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s)", (session['user_id'], session['email'], book_id, qty, cart_type, add_date, add_time))
+                    conn.commit()
+                else:
+                    qty = int(check_cart['qty']) + 1
+                    cursor.execute("UPDATE user_cart SET qty = %s WHERE user_id = %s and email = %s and book_id = %s and cart_type = %s", (qty, session['user_id'], session['email'], book_id, 2))
+                    conn.commit()
+
         else:
             return redirect(url_for('login'))
 
@@ -164,6 +238,7 @@ def bookDetails(book_id):
     conn.close()
 
     return render_template('bookdetails.html', book_id=book_id, data=data, reldata=reldata)
+
 
 @app.route('/cart', methods=['GET', 'POST'])
 def userCart():
@@ -530,8 +605,9 @@ def userAddress():
             state = request.form['state']
             district = request.form['district']
             pincode = request.form['pincode']
+            add_type = request.form['add_type']
             
-            if not all([name, mobile, email, address, state, district, pincode]):
+            if not all([name, mobile, email, address, state, district, pincode, add_type]):
                 flash('All Fields are required', 'danger')
                 return redirect(url_for('userAddress'))
             
@@ -550,7 +626,7 @@ def userAddress():
                 flash('Pincode Format! Must be 6 digit', 'danger')
                 return redirect(url_for('userAddress'))
             
-            cursor.execute("INSERT INTO address (user_id, name, mobile, email, address, state, district, pincode, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (session['user_id'], name, mobile, email, address, state, district, pincode, add_date, add_time))
+            cursor.execute("INSERT INTO address (user_id, user_email, name, mobile, email, address, state, district, pincode, add_type, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (session['user_id'], session['email'], name, mobile, email, address, state, district, pincode, add_type, add_date, add_time))
             
             conn.commit()
             flash('Address added Successfully', 'success')
@@ -558,10 +634,115 @@ def userAddress():
             cursor.close()
             conn.close()
                 
-        return render_template('address.html')
+        return render_template('addaddress.html')
     else:
         return redirect(url_for('login'))
 
+
+@app.route('/showaddress')
+def userShowAddress():
+    if 'user_logged_in' in session and 'user_id' in session and 'email' in session:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM address WHERE user_id = %s AND user_email = %s", (session['user_id'], session['email']))
+        data = cursor.fetchall()
+        return render_template('showaddress.html', data=data)
+    else:
+        return redirect(url_for('login'))
+    
+@app.route('/editaddress/<int:add_id>', methods=['GET', 'POST'])
+def userEditAddress(add_id):
+    if 'user_logged_in' in session and 'user_id' in session and 'email' in session:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        cursor.execute("SELECT * FROM address WHERE id = %s AND user_id = %s AND user_email = %s", (add_id, session['user_id'], session['email']))
+        data = cursor.fetchone()
+        
+        if request.method == 'POST':
+            name = request.form['name']
+            mobile = request.form['mobile']
+            email = request.form['email']
+            address = request.form['address']
+            state = request.form['state']
+            district = request.form['district']
+            pincode = request.form['pincode']
+            add_type = request.form['add_type']
+            
+            if not all([name, mobile, email, address, state, district, pincode, add_type]):
+                flash('All Fields are required', 'danger')
+                return redirect(url_for('userEditAddress'))
+            
+            email_regex = r"(^\w|[a-zA-Z0-9._%+-]+)@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+            if not re.match(email_regex, email):
+                flash('Invalid email format!', 'danger')
+                return redirect(url_for('userEditAddress'))
+            
+            mobile_regex = r"^\d{10}$"
+            if not re.match(mobile_regex, mobile):
+                flash('Mobile Number format! Must be 10 digits.', 'danger')
+                return redirect(url_for('userEditAddress'))
+            
+            pincode_regex = r"^\d{6}$"
+            if not re.match(pincode_regex, pincode):
+                flash('Pincode Format! Must be 6 digit', 'danger')
+                return redirect(url_for('userEditAddress'))
+            
+            cursor.execute("UPDATE address SET name = %s, mobile = %s, email = %s, address = %s, state = %s, district = %s, pincode = %s, add_type = %s", (name, mobile, email, address, state, district, pincode, add_type))
+            
+            conn.commit()
+            flash('Address updated Successfully', 'success')
+            
+        cursor.close()
+        conn.close()
+        
+        return render_template('editaddress.html', data=data)
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/deleteaddress', methods=['POST'])
+def userdeleteaddress():
+    if 'user_logged_in' in session and 'user_id' in session and 'email' in session:
+        try:
+            del_id = request.json.get('del_id')  # Accepting del_id as JSON
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute(
+                "DELETE FROM address WHERE id = %s AND user_id = %s AND user_email = %s", 
+                (del_id, session['user_id'], session['email'])
+            )
+            conn.commit()
+            
+            if cursor.rowcount == 0:
+                response = {
+                    "status": "error",
+                    "message": "No address found to delete."
+                }
+            else:
+                response = {
+                    "status": "success",
+                    "message": "Address successfully deleted."
+                }
+
+            cursor.close()
+            conn.close()
+
+            return jsonify(response)
+
+        except Exception as e:
+            print(f"Error: {e}")
+            response = {
+                "status": "error",
+                "message": "An error occurred while trying to delete the address. Please try again."
+            }
+            return jsonify(response)
+    else:
+        response = {
+            "status": "error",
+            "message": "User not logged in."
+        }
+        return jsonify(response)
+    
 # user start
 
 # admin start
