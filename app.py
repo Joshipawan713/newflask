@@ -112,61 +112,6 @@ def bookstore():
     
     return render_template('bookstore.html', data=data)
 
-# @app.route('/bookdetails/<int:book_id>', methods=['GET', 'POST'])
-# def bookDetails(book_id):
-#     add_date, add_time = get_current_date_time()
-#     conn = get_db_connection()
-#     cursor = conn.cursor(dictionary=True)
-#     cursor.execute('SELECT * FROM books WHERE id = %s', (book_id,))
-#     data = cursor.fetchone()
-    
-#     covers_folder = os.path.join(current_app.static_folder, 'coverimage')
-
-#     image_filename = data.get('coverpage')
-#     image_path = os.path.join(covers_folder, image_filename)
-#     if not image_filename or image_filename.strip() == "":
-#         data['coverpage'] = 'imagesnotfound.jpg'
-            
-#     if not os.path.exists(image_path):
-#         data['coverpage'] = 'imagesnotfound.jpg'
-
-#     cursor.execute("SELECT * FROM books WHERE (subject = %s OR language = %s) AND id != %s", (data['subject'], data['language'], book_id))
-#     reldata = cursor.fetchall()
-
-#     for bookdata in reldata:
-#         relimage_filename = bookdata.get('coverpage')
-#         relimage_path = os.path.join(covers_folder,relimage_filename)
-
-#         if not relimage_filename or relimage_filename.strip() == "":
-#             bookdata['coverpage'] = 'imagesnotfound.jpg'
-
-#         if not os.path.exists(relimage_path):
-#             bookdata['coverpage'] = 'imagesnotfound.jpg'
-
-#     if request.method == 'POST':
-#         if 'user_logged_in' in session:
-#             cursor.execute("SELECT * FROM user_cart WHERE user_id = %s and email = %s and book_id = %s", (session['user_id'], session['email'], book_id))
-#             check_cart = cursor.fetchone()
-#             # print(check_cart)
-#             if not check_cart:
-#                 qty = 1
-#                 cart_type = 'Cart'
-#                 cursor.execute("INSERT INTO user_cart (user_id, email, book_id, qty, cart_type, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s)", (session['user_id'], session['email'], book_id, qty, cart_type, add_date, add_time))
-#                 conn.commit()
-#             else:
-#                 qty = int(check_cart['qty']) + 1
-#                 cursor.execute("UPDATE user_cart SET qty = %s WHERE user_id = %s and email = %s and book_id = %s", (qty, session['user_id'], session['email'], book_id))
-#                 conn.commit()
-#         else:
-#             return redirect(url_for('login'))
-
-#     cursor.close()
-#     conn.close()
-
-#     return render_template('bookdetails.html', book_id=book_id, data=data, reldata=reldata)
-
-
-
 
 @app.route('/bookdetails/<int:book_id>', methods=['GET', 'POST'])
 def bookDetails(book_id):
@@ -205,31 +150,31 @@ def bookDetails(book_id):
             add_date = datetime.now().date()
             add_time = datetime.now().time()
 
-            if request.form.get('add_to_cart'):
-                cursor.execute("SELECT * FROM user_cart WHERE user_id = %s and email = %s and book_id = %s and cart_type = %s", (session['user_id'], session['email'], book_id, 1))
+            def add_to_cart_or_wishlist(cart_type):
+                cursor.execute(
+                    "SELECT * FROM user_cart WHERE user_id = %s AND email = %s AND book_id = %s AND cart_type = %s",
+                    (session['user_id'], session['email'], book_id, cart_type),
+                )
                 check_cart = cursor.fetchone()
-                if not check_cart:
-                    qty = 1
-                    cart_type = 1
-                    cursor.execute("INSERT INTO user_cart (user_id, email, book_id, qty, cart_type, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s)", (session['user_id'], session['email'], book_id, qty, cart_type, add_date, add_time))
-                    conn.commit()
-                else:
-                    qty = int(check_cart['qty']) + 1
-                    cursor.execute("UPDATE user_cart SET qty = %s WHERE user_id = %s and email = %s and book_id = %s and cart_type = %s", (qty, session['user_id'], session['email'], book_id, 1))
-                    conn.commit()
 
-            if request.form.get('add_to_wishlist'):
-                cursor.execute("SELECT * FROM user_cart WHERE user_id = %s and email = %s and book_id = %s and cart_type = %s", (session['user_id'], session['email'], book_id, 2))
-                check_cart = cursor.fetchone()
                 if not check_cart:
                     qty = 1
-                    cart_type = 2
-                    cursor.execute("INSERT INTO user_cart (user_id, email, book_id, qty, cart_type, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s)", (session['user_id'], session['email'], book_id, qty, cart_type, add_date, add_time))
-                    conn.commit()
+                    cursor.execute(
+                        "INSERT INTO user_cart (user_id, email, book_id, qty, cart_type, add_date, add_time) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                        (session['user_id'], session['email'], book_id, qty, cart_type, add_date, add_time),
+                    )
                 else:
                     qty = int(check_cart['qty']) + 1
-                    cursor.execute("UPDATE user_cart SET qty = %s WHERE user_id = %s and email = %s and book_id = %s and cart_type = %s", (qty, session['user_id'], session['email'], book_id, 2))
-                    conn.commit()
+                    cursor.execute(
+                        "UPDATE user_cart SET qty = %s WHERE user_id = %s AND email = %s AND book_id = %s AND cart_type = %s",
+                        (qty, session['user_id'], session['email'], book_id, cart_type),
+                    )
+                conn.commit()
+
+            if 'add_to_cart' in request.form:
+                add_to_cart_or_wishlist(1)
+            elif 'add_to_wishlist' in request.form:
+                add_to_cart_or_wishlist(2)
 
         else:
             return redirect(url_for('login'))
