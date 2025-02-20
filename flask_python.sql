@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 09, 2025 at 11:29 AM
+-- Generation Time: Feb 15, 2025 at 05:52 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -48,10 +48,7 @@ CREATE TABLE `address` (
 --
 
 INSERT INTO `address` (`id`, `user_id`, `user_email`, `name`, `mobile`, `email`, `address`, `state`, `district`, `pincode`, `add_type`, `add_date`, `add_time`) VALUES
-(2, 1, 'test@gmail.com', 'Scot80', '9454548444', 'your.email+fakedata72074@gmail.com', '25263 Carter Fields', 'Virginia', '611 Fisher Port', '516107', 'Home', '2025-02-09', '03:00:20 PM'),
-(3, 1, 'test@gmail.com', 'Amelia93', '8986454545', 'your.email+fakedata17188@gmail.com', '287 Estelle Coves', 'Colorado', '834 Roderick Throughway', '196755', 'Office', '2025-02-09', '03:23:39 PM'),
-(4, 1, 'test@gmail.com', 'Houston.Hickle', '8789898888', 'your.email+fakedata70998@gmail.com', '31102 Emmitt Haven', 'Vermont', '980 Ambrose Ports', '229087', 'Home', '2025-02-09', '03:51:07 PM'),
-(5, 1, 'test@gmail.com', 'Alayna.Kshlerin', '9898965656', 'your.email+fakedata21941@gmail.com', '26974 Nolan Unions', 'Wisconsin', '1758 Anne Ramp', '255365', 'Home', '2025-02-09', '03:51:46 PM');
+(6, 1, 'test@gmail.com', 'Cordia49', '9656565656', 'your.email+fakedata87217@gmail.com', '4275 Peggie Fields', 'Kansas', '8548 Elissa Branch', '009581', 'Home', '2025-02-11', '09:37:24 PM');
 
 -- --------------------------------------------------------
 
@@ -129,6 +126,29 @@ INSERT INTO `books` (`id`, `coverpage`, `title`, `editor`, `publisher_year`, `su
 (4, '2025-01-22_asus.jpg', 'Dynamic Creative Orchestrator', 'Sint id odit.', 8787, 'Hindi', 'Sunt dolore occaecati et magni', 1210, 102, 'Windler', 100, 100, 'Autem inventore iure commodi.', '2025-01-22', '08:59:44 PM'),
 (5, '5_asus.jpg', 'National Accounts Engineer', 'Placeat architecto est ratione.', 4545, 'Hindi', 'Soluta aliquid odit.', 74858, 46, 'Hauck', 2000, 1000, 'Molestias blanditiis cupiditate.', '2025-01-22', '09:03:44 PM'),
 (6, 'CIIL7.png', 'Forward Optimization Assistant', 'Nisi fuga', 2024, 'Hindi', '85-85-85-85', 150, 37, 'Rosenbaum', 5000, 4500, 'Amet iusto iste esse ipsam.', '2025-01-31', '11:07:43 AM');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `chat_app`
+--
+
+CREATE TABLE `chat_app` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(200) NOT NULL,
+  `message` text NOT NULL,
+  `add_date` varchar(20) NOT NULL,
+  `add_time` varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `chat_app`
+--
+
+INSERT INTO `chat_app` (`id`, `name`, `email`, `message`, `add_date`, `add_time`) VALUES
+(1, 'pawan', 'pawan@gmail.com', 'hi', '2025-02-14', '10:08:14 PM'),
+(2, 'pawan', 'pawan@gmail.com', 'hi, hello', '2025-02-15', '09:49:17 PM');
 
 -- --------------------------------------------------------
 
@@ -19744,6 +19764,12 @@ ALTER TABLE `books`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `chat_app`
+--
+ALTER TABLE `chat_app`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `country`
 --
 ALTER TABLE `country`
@@ -19811,7 +19837,7 @@ ALTER TABLE `user_cart`
 -- AUTO_INCREMENT for table `address`
 --
 ALTER TABLE `address`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `admin`
@@ -19830,6 +19856,12 @@ ALTER TABLE `admin_cart`
 --
 ALTER TABLE `books`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `chat_app`
+--
+ALTER TABLE `chat_app`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `country`

@@ -112,7 +112,6 @@ def bookstore():
     
     return render_template('bookstore.html', data=data)
 
-
 @app.route('/bookdetails/<int:book_id>', methods=['GET', 'POST'])
 def bookDetails(book_id):
     add_date, add_time = get_current_date_time()
@@ -184,7 +183,6 @@ def bookDetails(book_id):
 
     return render_template('bookdetails.html', book_id=book_id, data=data, reldata=reldata)
 
-
 @app.route('/cart', methods=['GET', 'POST'])
 def userCart():
     if 'user_logged_in' in session and 'user_id' in session and 'email' in session:
@@ -233,6 +231,13 @@ def userCart():
             total_price += int(books['discounted_price']) * int(books['qty'])
 
         return render_template('cart.html', cart_data=cart_data, total_price=total_price)
+    else:
+        return redirect(url_for('login'))
+    
+@app.route('/support_ticket', methods=['GET', 'POST'])
+def supportTicket():
+    if 'user_logged_in' in session and 'user_id' in session and 'email' in session:
+        return render_template('support_ticket.html')
     else:
         return redirect(url_for('login'))
     
