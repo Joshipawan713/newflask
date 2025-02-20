@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %} Support Ticket {% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-12">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="alert-container">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                <strong>{{ category|capitalize }}:</strong> {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        {% include "sidebar.html" %}
+
+        <div class="col-lg-9">
+            <div class="card shadow mb-4">
+                <div class="card-header">Support Ticket</div>
+                <div class="card-body">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
